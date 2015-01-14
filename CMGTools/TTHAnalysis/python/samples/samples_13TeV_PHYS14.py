@@ -193,6 +193,11 @@ SMS_T1bbbb_2J_mGl1500_mLSP100,
 SMS_T1bbbb_2J_mGl1000_mLSP900,
 ]
 
+### PRIVATE Local
+T5WW_2J_mGo1400_mCh315_mChi300  = kreator.makeMCComponentFromLocal('T5WW_2J_mGo1400_mCh315_mChi300', '/13TeV_Gl_Gl_4q_Gl1400_LSP300_Chi315/', '/nfs/dust/cms/group/susy-desy/Run2/MC/MiniAOD/PHYS14_PU20_25ns/MINIAOD_V1/%s',".*root",0.0252977)
+
+SusySignalSamples += [T5WW_2J_mGo1400_mCh315_mChi300]
+
 mcSamplesPHYS14_PU20bx25 = QCDHT + [WJetsToLNu] + WJetsToLNuHT +  [DYJetsToLL_M50, DYJetsMuMuM50_PtZ180] + DYJetsM50HT + GJetsHT + ZJetsToNuNuHT + SingleTop + [ TTJets, TTWJets, TTZJets, TTH, WZJetsTo3LNu, ZZTo4L, GGHZZ4L] + SusySignalSamples
 
 mcSamples = mcSamplesPHYS14_PU20bx25 + mcSamplesPHYS14_PU40bx25
