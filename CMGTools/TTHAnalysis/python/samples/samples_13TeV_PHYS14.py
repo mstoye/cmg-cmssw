@@ -194,9 +194,17 @@ SMS_T1bbbb_2J_mGl1000_mLSP900,
 ]
 
 ### PRIVATE Local
+#DESY
 T5WW_2J_mGo1400_mCh315_mChi300  = kreator.makeMCComponentFromLocal('T5WW_2J_mGo1400_mCh315_mChi300', '/13TeV_Gl_Gl_4q_Gl1400_LSP300_Chi315/', '/nfs/dust/cms/group/susy-desy/Run2/MC/MiniAOD/PHYS14_PU20_25ns/MINIAOD_V1/%s',".*root",0.0252977)
+#Vienna
+T5qqqqWW_2J_mGo1500_mCh100_mChi800  = kreator.makeMCComponentFromLocal('T5qqqqWW_2J_mGo1500_mCh100_mChi800', 'T5Full_Gl1500_Chi800_LSP100', '/nfs/dust/cms/user/lobanov/SUSY/Run2/RA4/MC/MiniAOD/PHYS14_PU20_25ns/%s',".*root",0.0141903)
+T5qqqqWW_2J_mGo1200_mCh800_mChi1000  = kreator.makeMCComponentFromLocal('T5qqqqWW_2J_mGo1200_mCh800_mChi1000', 'T5Full_Gl1200_Chi1000_LSP800', '/nfs/dust/cms/user/lobanov/SUSY/Run2/RA4/MC/MiniAOD/PHYS14_PU20_25ns/%s',".*root",0.0856418)
 
-SusySignalSamples += [T5WW_2J_mGo1400_mCh315_mChi300]
+SusySignalSamples += [
+T5WW_2J_mGo1400_mCh315_mChi300,
+T5qqqqWW_2J_mGo1500_mCh100_mChi800,
+T5qqqqWW_2J_mGo1200_mCh800_mChi1000
+]
 
 mcSamplesPHYS14_PU20bx25 = QCDHT + [WJetsToLNu] + WJetsToLNuHT +  [DYJetsToLL_M50, DYJetsMuMuM50_PtZ180] + DYJetsM50HT + GJetsHT + ZJetsToNuNuHT + SingleTop + [ TTJets, TTWJets, TTZJets, TTH, WZJetsTo3LNu, ZZTo4L, GGHZZ4L] + SusySignalSamples
 
