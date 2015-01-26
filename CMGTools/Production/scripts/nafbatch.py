@@ -18,9 +18,9 @@ def batchScriptNAF( jobDir='/nfs/dust/cms/user/lobanov/SUSY/Run2/CMG/CMSSW_7_0_6
 ## make sure the right shell will be used
 #$ -S /bin/zsh
 ## the cpu time for this job
-#$ -l h_rt=02:59:00
+#$ -l h_rt=06:59:00
 ## the maximum memory usage of this job
-#$ -l h_vmem=1900M
+#$ -l h_vmem=3900M
 ## operating system
 #$ -l distro=sld6
 ## architecture
@@ -66,6 +66,7 @@ cd $JobDir
 
 echo 'Running in dir' `pwd`
 python $CMSSW_BASE/src/PhysicsTools/HeppyCore/python/framework/looper.py pycfg.py config.pck
+mv Loop/* ./
 echo
 echo job end at `date`
 """
