@@ -9,6 +9,11 @@ from PhysicsTools.Heppy.analyzers.objects.all import *
 from PhysicsTools.Heppy.analyzers.gen.all import *
 import os
 
+from CMGTools.TTHAnalysis.analyzers.ttHhistoCounterAnalyzer import ttHhistoCounterAnalyzer
+susyCounter = cfg.Analyzer(
+    ttHhistoCounterAnalyzer, name="ttHhistoCounterAnalyzer",
+    )
+
 PDFWeights = []
 #PDFWeights = [ ("CT10",53), ("MSTW2008lo68cl",41), ("NNPDF21_100",101) ]
 
@@ -60,6 +65,7 @@ eventFlagsAna = cfg.Analyzer(
         "trkPOG_manystripclus53X" : [ "Flag_trkPOG_manystripclus53X" ],
         "trkPOG_toomanystripclus53X" : [ "Flag_trkPOG_toomanystripclus53X" ],
         "trkPOG_logErrorTooManyClusters" : [ "Flag_trkPOG_logErrorTooManyClusters" ],
+        "METFilters" : [ "Flag_METFilters" ],
     }
     )
 
@@ -251,7 +257,7 @@ jetAna = cfg.Analyzer(
     mGT     = "PHYS14_25_V2",
     jecPath = "%s/src/CMGTools/RootTools/data/jec/" % os.environ['CMSSW_BASE'],
     shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
-    smearJets = True,
+    smearJets = False,
     shiftJER = 0, # set to +1 or -1 to get +/-1 sigma shifts  
     cleanJetsFromTaus = False,
     cleanJetsFromIsoTracks = False,
@@ -294,6 +300,7 @@ metAna = cfg.Analyzer(
     METAnalyzer, name="metAnalyzer",
     doTkMet = False,
     doMetNoMu = False,
+    recalibrate = False,
     candidates='packedPFCandidates',
     candidatesTypes='std::vector<pat::PackedCandidate>',
     dzMax = 0.1,
