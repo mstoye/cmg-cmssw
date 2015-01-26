@@ -75,10 +75,10 @@ class JetAnalyzer( Analyzer ):
             if getattr(self.cfg_ana, 'smearJets', False):
                 self.smearJets(event, allJets)
 
-        # sort jets by PT
+	##Sort Jets by pT
         allJets.sort(key = lambda j : j.pt(), reverse = True)
 
-        ## Apply jet selection
+	## Apply jet selection
         event.jets = []
         event.jetsFailId = []
         event.jetsAllNoID = []
