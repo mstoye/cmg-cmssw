@@ -67,6 +67,7 @@ cd $JobDir
 echo 'Running in dir' `pwd`
 python $CMSSW_BASE/src/PhysicsTools/HeppyCore/python/framework/looper.py pycfg.py config.pck
 mv Loop/* ./
+rm -r Loop
 echo
 echo job end at `date`
 """
