@@ -104,6 +104,16 @@ QCD_HT_500To1000_ext1,
 QCD_HT_1000ToInf_ext1
 ]
 
+#QCD_Pt1800to2400 = kreator.makeMCComponent("QCD_Pt1800to2400", "/QCD_Pt-1800to2400_Tune4C_13TeV_pythia8/Phys14DR-PU20bx25_trkalmb_PHYS14_25_V1-v2/MINIAODSIM", "CMS", ".*root")
+#QCD_Pt2400to3200 = kreator.makeMCComponent("QCD_Pt2400to3200", "/QCD_Pt-2400to3200_Tune4C_13TeV_pythia8/Spring14miniaod-141029_PU40bx50_PLS170_V6AN2-v1/MINIAODSIM", "CMS", ".*root")
+#QCD_Pt3200 = kreator.makeMCComponent("QCD_Pt3200", "/QCD_Pt-3200_Tune4C_13TeV_pythia8/Spring14miniaod-141029_PU40bx50_PLS170_V6AN2-v1/MINIAODSIM", "CMS", ".*root")
+#QCDPt = [
+#QCD_Pt1800to2400,
+#QCD_Pt2400to3200,
+#QCD_Pt3200,
+#]
+
+
 # W inclusive (cross section from FEWZ, StandardModelCrossSectionsat13TeV)
 WJetsToLNu = kreator.makeMCComponent("WJetsToLNu","/WJetsToLNu_13TeV-madgraph-pythia8-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM", "CMS", ".*root", 20508.9)
 
