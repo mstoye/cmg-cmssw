@@ -18,9 +18,9 @@ def batchScriptNAF( jobDir='/nfs/dust/cms/user/lobanov/SUSY/Run2/CMG/CMSSW_7_0_6
 ## make sure the right shell will be used
 #$ -S /bin/zsh
 ## the cpu time for this job
-#$ -l h_rt=06:59:00
+#$ -l h_rt=02:59:00
 ## the maximum memory usage of this job
-#$ -l h_vmem=3900M
+#$ -l h_vmem=1900M
 ## operating system
 #$ -l distro=sld6
 ## architecture
@@ -65,9 +65,40 @@ echo "Changing to job dir" $JobDir
 cd $JobDir
 
 echo 'Running in dir' `pwd`
+
+if [ -f processing ]; then
+    echo "Already processing that chunk now"
+    exit 0
+fi
+
+if [ -f processed ]; then
+    echo "Already processed that chunk"
+    exit 0
+fi
+
+touch processing
 python $CMSSW_BASE/src/PhysicsTools/HeppyCore/python/framework/looper.py pycfg.py config.pck
+# >& looper.log
 mv Loop/* ./
 rm -r Loop
+rm processing
+
+# check output quality
+
+if [ -f log.txt ]; then
+   log=$(grep "number of events processed" log.txt)
+
+   if $log ; then
+      echo "Successfully" $log
+      touch processed
+   else
+      echo "Job failed!"
+      touch failed
+   fi
+else
+   touch failed
+fi
+
 echo
 echo job end at `date`
 """
