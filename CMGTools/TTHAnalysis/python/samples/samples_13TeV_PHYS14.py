@@ -256,16 +256,28 @@ SMS_T1bbbb_2J_mGl1000_mLSP900,
 ]
 
 ### PRIVATE Local
+
 #DESY
+
+Sq_Gl_4t_Gl1500_Sq2000_LSP100 = kreator.makeMCComponentFromLocal('Sq_Gl_4t_Gl1500_Sq2000_LSP100', '/13TeV_Sq_Gl_4t_Gl1500_Sq2000_LSP100/', '/nfs/dust/cms/group/susy-desy/Run2/MC/MiniAOD/PHYS14_PU20_25ns/MINIAOD_V1/%s', '.*root',0.0172)
+Sq_Gl_4t_Gl1500_Sq2500_LSP100 = kreator.makeMCComponentFromLocal('Sq_Gl_4t_Gl1500_Sq2500_LSP100', '/13TeV_Sq_Gl_4t_Gl1500_Sq2500_LSP100/', '/nfs/dust/cms/group/susy-desy/Run2/MC/MiniAOD/PHYS14_PU20_25ns/MINIAOD_V1/%s', '.*root',0.00594)
+Sq_Gl_4t_Gl1500_Sq3000_LSP100 = kreator.makeMCComponentFromLocal('Sq_Gl_4t_Gl1500_Sq3000_LSP100', '/13TeV_Sq_Gl_4t_Gl1500_Sq3000_LSP100/', '/nfs/dust/cms/group/susy-desy/Run2/MC/MiniAOD/PHYS14_PU20_25ns/MINIAOD_V1/%s', '.*root',0.00206)
+
+Sq_Gl_4t_Gl1300_Sq1300_LSP100 = kreator.makeMCComponentFromLocal('Sq_Gl_4t_Gl1300_Sq1300_LSP100', '/13TeV_Sq_Gl_4t_Gl1300_Sq1300_LSP100/', '/nfs/dust/cms/group/susy-desy/Run2/MC/MiniAOD/PHYS14_PU20_25ns/MINIAOD_V1/%s', '.*root',0.151)
+
+T1tttt_Gl1300_LSP100 = kreator.makeMCComponentFromLocal('T1tttt_Gl1300_LSP100', '/13TeV_T14t_Gl1300_LSP100/', '/nfs/dust/cms/group/susy-desy/Run2/MC/MiniAOD/PHYS14_PU20_25ns/MINIAOD_V1/%s', '.*root',0.0449)
+T1tttt_mGo1300_mChi100_loc = kreator.makeMCComponentFromLocal('T1tttt_mGo1300_mChi100_loc', '/SMS_T1tttt_2J_mGl1300_mLSP100/', '/store/cmst3/group/susy/alobanov/MC/PHYS14/PU20_25ns/%s', '.*root', 0.0449)
+
+
 T5qqqqWW_2J_mGo1400_mCh315_mChi300  = kreator.makeMCComponentFromLocal('T5qqqqWW_2J_mGo1400_mCh315_mChi300', '/13TeV_Gl_Gl_4q_Gl1400_LSP300_Chi315/', '/nfs/dust/cms/group/susy-desy/Run2/MC/MiniAOD/PHYS14_PU20_25ns/MINIAOD_V1/%s',".*root",0.0252977)
-Sq_Gl_4t_Gl1300_Sq1300_LSP100  = kreator.makeMCComponentFromLocal('Sq_Gl_4t_Gl1300_Sq1300_LSP100', '/13TeV_Sq_Gl_4t_Gl1300_Sq1300_LSP100/', '/nfs/dust/cms/user/lobanov/SUSY/Run2/RA4/MC/MiniAOD/PHYS14_PU20_25ns/%s',".*root")
 #Vienna
 T5qqqqWW_2J_mGo1200_mCh800_mChi1000  = kreator.makeMCComponentFromLocal('T5qqqqWW_2J_mGo1200_mCh800_mChi1000', 'T5Full_Gl1200_Chi1000_LSP800', '/nfs/dust/cms/user/lobanov/SUSY/Run2/RA4/MC/MiniAOD/PHYS14_PU20_25ns/%s',".*root",0.0856418)
 T5qqqqWW_2J_mGo1500_mCh100_mChi800   = kreator.makeMCComponentFromLocal('T5qqqqWW_2J_mGo1500_mCh100_mChi800',  'T5Full_Gl1500_Chi800_LSP100',  '/nfs/dust/cms/user/lobanov/SUSY/Run2/RA4/MC/MiniAOD/PHYS14_PU20_25ns/%s',".*root",0.0141903)
 
+SusySignalSamples += [T5WW_2J_mGo1400_mCh315_mChi300, Sq_Gl_4t_Gl1500_Sq2000_LSP100,Sq_Gl_4t_Gl1500_Sq2500_LSP100,Sq_Gl_4t_Gl1500_Sq3000_LSP100,Sq_Gl_4t_Gl1300_Sq1300_LSP100,T1tttt_Gl1300_LSP100,T1tttt_mGo1300_mChi100_loc]
+
 SusySignalSamples += [
 T5qqqqWW_2J_mGo1400_mCh315_mChi300,
-Sq_Gl_4t_Gl1300_Sq1300_LSP100,
 T5qqqqWW_2J_mGo1500_mCh100_mChi800,
 T5qqqqWW_2J_mGo1200_mCh800_mChi1000
 ]
