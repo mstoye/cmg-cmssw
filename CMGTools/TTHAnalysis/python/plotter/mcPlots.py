@@ -79,7 +79,11 @@ def doSpam(text,x1,y1,x2,y2,align=12,fill=False,textSize=0.033,_noDelete={}):
     cmsprel.SetLineColor(0);
     cmsprel.SetTextAlign(align);
     cmsprel.SetTextFont(42);
-    cmsprel.AddText(text);
+    splittext = text.split("\\n")
+    if(len(splittext)>1):
+        for text in splittext: cmsprel.AddText(text)
+    else:
+        cmsprel.AddText(text);
     cmsprel.Draw("same");
     _noDelete[text] = cmsprel; ## so it doesn't get deleted by PyROOT
     return cmsprel
@@ -95,6 +99,14 @@ def doTinyCmsPrelim(textLeft="_default_",textRight="_default_",hasExpo=False,tex
         if "%(lumi)" in textRight: 
             textRight = textRight % { 'lumi':lumi }
         doSpam(textRight,.68+xoffs, .955, .99+xoffs, .995, align=32, textSize=textSize)
+
+def printExtraLabel(labeltext, legPosition):
+    nLines = len(labeltext.split("\\n"))
+
+    if legPosition  == "TR":
+        doSpam(labeltext, .30, .90-nLines*0.03, .48, .90, align=11, textSize=0.03)
+    elif legPosition == "TL":
+        doSpam(labeltext, .75, .90-nLines*0.03, .93, .90, align=11, textSize=0.03)
 
 def reMax(hist,hist2,islog,factorLin=1.3,factorLog=2.0):
     if  hist.ClassName() == 'THStack':
@@ -588,8 +600,21 @@ class PlotMaker:
                     if p2: p2.SetLogx(True)
                     total.GetXaxis().SetNoExponent(True)
                     total.GetXaxis().SetMoreLogLabels(True)
-                if islog: total.SetMaximum(2*total.GetMaximum())
-                if not islog: total.SetMinimum(0)
+                if not options.extraLabel=="": #free some space on the canvas for extra label lines
+                    tmpMin = 0.01 #default log miminum
+                    if pspec.hasOption('YMin'):
+                        tmpMin = pspec.getOption('YMin',1.0)
+                    total.SetMinimum(tmpMin)
+                    tmpMax = total.GetBinContent(total.GetMaximumBin())
+                    relHistHeight = 1- (ROOT.gStyle.GetPadTopMargin() + ROOT.gStyle.GetPadBottomMargin() + 0.03*len(options.extraLabel.split("\\n")))
+                    if islog: maximum = tmpMin * pow(tmpMax/tmpMin,1./relHistHeight);
+                    else: maximum = (tmpMax-tmpMin)/relHistHeight + tmpMin
+                    total.SetMaximum(maximum)
+                elif islog: #plain log without extra labels
+                    total.SetMaximum(2*total.GetMaximum())
+                    total.SetMinimum(0.01) # default min value for logy
+                    if pspec.hasOption('YMin'): total.SetMinimum(pspec.getOption('YMin',1.0))
+                else: total.SetMinimum(0)
                 total.Draw("HIST")
                 if self._options.plotmode == "stack":
                     stack.Draw("SAME HIST")
@@ -625,9 +650,10 @@ class PlotMaker:
                 doLegend(pmap,mca,corner=pspec.getOption('Legend','TR'),
                                   cutoff=legendCutoff, mcStyle=("F" if self._options.plotmode == "stack" else "L"),
                                   cutoffSignals=not(options.showSigShape or options.showIndivSigShapes or options.showSFitShape), 
-                                  textSize=(0.045 if doRatio else 0.035),
+                                  textSize=(0.045 if doRatio else  options.legendTextSize),
                                   legWidth=options.legendWidth)
                 doTinyCmsPrelim(hasExpo = total.GetMaximum() > 9e4 and not c1.GetLogy(),textSize=(0.045 if doRatio else 0.033))
+                if not options.extraLabel=="": printExtraLabel(options.extraLabel,pspec.getOption('Legend','TR'))
                 signorm = None; datnorm = None; sfitnorm = None
                 if options.showSigShape or options.showIndivSigShapes or options.showIndivSigs: 
                     signorms = doStackSignalNorm(pspec,pmap,options.showIndivSigShapes or options.showIndivSigs,extrascale=options.signalPlotScale, norm=not options.showIndivSigs)
@@ -703,6 +729,7 @@ def addPlotMakerOptions(parser):
     #parser.add_option("--lspam", dest="lspam",   type="string", default="CMS Simulation", help="Spam text on the right hand side");
     parser.add_option("--lspam", dest="lspam",   type="string", default="CMS Preliminary", help="Spam text on the right hand side");
     parser.add_option("--rspam", dest="rspam",   type="string", default="#sqrt{s} = 13 TeV, L = %(lumi).1f fb^{-1}", help="Spam text on the right hand side");
+    parser.add_option("--extraLabel", dest="extraLabel", default = "", help="print extra text next to the legend (several lines in case string contains \\n )")
     parser.add_option("--print", dest="printPlots", type="string", default="png,pdf,txt", help="print out plots in this format or formats (e.g. 'png,pdf,txt')");
     parser.add_option("--pdir", "--print-dir", dest="printDir", type="string", default="plots", help="print out plots in this directory");
     parser.add_option("--showSigShape", dest="showSigShape", action="store_true", default=False, help="Superimpose a normalized signal shape")
@@ -724,6 +751,7 @@ def addPlotMakerOptions(parser):
     parser.add_option("--select-plot", "--sP", dest="plotselect", action="append", default=[], help="Select only these plots out of the full file")
     parser.add_option("--exclude-plot", "--xP", dest="plotexclude", action="append", default=[], help="Exclude these plots from the full file")
     parser.add_option("--legendWidth", dest="legendWidth", type="float", default=0.25, help="Width of the legend")
+    parser.add_option("--legendTextSize", dest="legendTextSize", type="float", default=0.035, help="Textsize used in the legend (if no ratio plot is done)")
     parser.add_option("--flagDifferences", dest="flagDifferences", action="store_true", default=False, help="Flag plots that are different (when using only two processes, and plotmode nostack")
 
 if __name__ == "__main__":

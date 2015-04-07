@@ -10,6 +10,7 @@ parser.add_option("-o",   "--out",    dest="outname", type="string", default=Non
 parser.add_option("--od", "--outdir", dest="outdir", type="string", default=None, help="output name") 
 parser.add_option("-v", "--verbose",  dest="verbose",  default=0,  type="int",    help="Verbosity level (0 = quiet, 1 = verbose, 2+ = more)")
 parser.add_option("--asimov", dest="asimov", action="store_true", help="Asimov")
+parser.add_option("--dummyYieldsForZeroBkg",  dest="dummyYieldsForZeroBkg", action="store_true", default=False, help="Set dummy yields such it corresponds to 0.01 for 4/fb");
 
 (options, args) = parser.parse_args()
 options.weight = True
@@ -33,6 +34,8 @@ else:
     report['data_obs'] = report['data'].Clone("x_data_obs") 
 
 allyields = dict([(p,h.Integral()) for p,h in report.iteritems()])
+for p,h in report.iteritems():
+    print p, h.Integral()
 procs = []; iproc = {}
 signals, backgrounds = [], []
 for i,s in enumerate(mca.listSignals()):
@@ -43,6 +46,20 @@ for i,b in enumerate(mca.listBackgrounds()):
     if allyields[b] == 0: continue
     backgrounds.append(b)
     procs.append(b); iproc[b] = i+1
+
+if len(backgrounds)==0 and options.dummyYieldsForZeroBkg==True:
+    print "Yield of dummy always set to 0.0025*options.lumi (in 1/fb). ScaleFactor of TTBar is", mca.getScales("TT"), ". Scale factor set to", 0.0025*options.lumi
+    print options.lumi
+    backgrounds.append("DummyContent")
+    procs.append("DummyContent"); iproc["DummyContent"] = 1
+    allyields["DummyContent"]=0.0025*options.lumi
+    if len(signals)>0: 
+        report['DummyContent'] = report[signals[0]].Clone("x_DummyContent") 
+        report['DummyContent'].Reset()
+        report['DummyContent'].SetBinContent(1,allyields["DummyContent"])
+        
+        
+
 
 systs = {}
 systsEnv = {}
@@ -58,6 +75,7 @@ for sysfile in args[4:]:
             (name, procmap, binmap, amount) = field[:4]
             if re.match(binmap,binname) == None: continue
             if name not in systs: systs[name] = []
+            if options.verbose: print procmap, re.compile(procmap), amount
             systs[name].append((re.compile(procmap),amount))
         elif field[4] in ["envelop","shapeOnly","templates","alternateShapeOnly"]:
             (name, procmap, binmap, amount) = field[:4]
@@ -77,6 +95,7 @@ for name in systs.keys():
         effect = "-"
         for (procmap,amount) in systs[name]:
             if re.match(procmap, p): effect = amount
+            if options.verbose: print p, effect
         effmap[p] = effect
     systs[name] = effmap
 
@@ -190,7 +209,8 @@ for signal in mca.listSignals():
     datacard.write("shapes *        * ../common/%s.input.root x_$PROCESS x_$PROCESS_$SYSTEMATIC\n" % binname)
     datacard.write('##----------------------------------\n')
     datacard.write('bin         %s\n' % binname)
-    datacard.write('observation %s\n' % myyields['data_obs'])
+    if len(backgrounds)==1 and options.dummyYieldsForZeroBkg==True and backgrounds[0]=="DummyContent": datacard.write('observation %s\n' % myyields['DummyContent'])
+    else: datacard.write('observation %s\n' % myyields['data_obs'])
     datacard.write('##----------------------------------\n')
     klen = max([7, len(binname)]+[len(p) for p in myprocs])
     kpatt = " %%%ds "  % klen

@@ -18,6 +18,9 @@
 #include "EgammaAnalysis/ElectronTools/interface/SimpleElectron.h"
 #include "EgammaAnalysis/ElectronTools/interface/ElectronEPcombinator.h"
 //#include "EgammaAnalysis/ElectronTools/interface/ElectronEnergyCalibrator.h"
+# include "PhysicsTools/Heppy/interface/asa047.h"
+# include "PhysicsTools/Heppy/interface/topness.h"
+
 #include <vector>
 namespace {
   namespace {
@@ -43,6 +46,6 @@ namespace {
     //  heppy::SimpleElectron fuffaElectron;
     //  ElectronEnergyCalibrator fuffaElectronCalibrator;
     //  heppy::ElectronEPcombinator fuffaElectronCombinator;
-
+    Topness::Topness topness;
   }
 }
