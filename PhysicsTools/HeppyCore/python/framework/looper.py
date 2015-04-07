@@ -89,7 +89,13 @@ class Looper(object):
         if len(self.cfg_comp.files)==0:
             errmsg = 'please provide at least an input file in the files attribute of this component\n' + str(self.cfg_comp)
             raise ValueError( errmsg )
-        self.events = config.events_class(self.cfg_comp.files, tree_name)
+        if hasattr(config,"preprocessor") and config.preprocessor is not None :
+              self.cfg_comp = config.preprocessor.run(self.cfg_comp,self.outDir,firstEvent,nEvents)
+        if hasattr(self.cfg_comp,"options"):
+              print self.cfg_comp.files,self.cfg_comp.options
+              self.events = config.events_class(self.cfg_comp.files, tree_name,options=self.cfg_comp.options)
+        else :
+              self.events = config.events_class(self.cfg_comp.files, tree_name)
         if hasattr(self.cfg_comp, 'fineSplit'):
             fineSplitIndex, fineSplitFactor = self.cfg_comp.fineSplit
             if fineSplitFactor > 1:
@@ -98,7 +104,9 @@ class Looper(object):
                 totevents = min(len(self.events),int(nEvents)) if (nEvents and int(nEvents) not in [-1,0]) else len(self.events)
                 self.nEvents = int(ceil(totevents/float(fineSplitFactor)))
                 self.firstEvent = firstEvent + fineSplitIndex * self.nEvents
-                #print "For component %s will process %d events starting from the %d one" % (self.cfg_comp.name, self.nEvents, self.firstEvent)
+                if self.firstEvent + self.nEvents >= totevents:
+                    self.nEvents = totevents - self.firstEvent 
+                #print "For component %s will process %d events starting from the %d one, ending at %d excluded" % (self.cfg_comp.name, self.nEvents, self.firstEvent, self.nEvents + self.firstEvent)
         # self.event is set in self.process
         self.event = None
         services = dict()

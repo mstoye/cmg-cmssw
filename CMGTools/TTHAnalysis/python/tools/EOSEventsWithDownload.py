@@ -14,6 +14,17 @@ class EOSEventsWithDownload(object):
         self._fileindex = -1
         self._localCopy = None
         self.events = None
+        ## Discover where I am
+        self.inMeyrin = True
+        if 'LSB_JOBID' in os.environ and 'HOSTNAME' in os.environ:
+            hostname = os.environ['HOSTNAME'].replace(".cern.ch","")
+            try:
+                wigners = subprocess.check_output(["bmgroup","g_wigner"]).split()
+                if hostname in wigners:
+                    self.inMeyrin = False
+                    print "Host %s is in bmgroup g_wigner, so I assume I'm in Wigner and not Meyrin" % hostname
+            except:
+                pass
     def __len__(self):
         return self._nevents
     def __getattr__(self, key):
@@ -31,8 +42,12 @@ class EOSEventsWithDownload(object):
                 elif replicas and ".cern.ch" in line:
                     geotag = int(line.split()[-1])
                     print "Found a replica with geotag %d" % geotag
-                    if geotag > 9000: return False # far replica: bad (EOS sometimes gives the far even if there's a near!)
-                    else: nears = True # we have found a replica that is far away
+                    if self.inMeyrin:
+                        if geotag > 9000: return False # far replica: bad (EOS sometimes gives the far even if there's a near!)
+                        else: nears = True # we have found a replica that is far away
+                    else:
+                        if geotag < 1000: return False # far replica: bad (EOS sometimes gives the far even if there's a near!)
+                        else: nears = True # we have found a replica that is far away
             # if we have found some near replicas, and no far replicas
             if nears: return True
         except:
@@ -44,7 +59,11 @@ class EOSEventsWithDownload(object):
             self.events = None # so it's closed
             if self._localCopy:
                 print "Removing local cache file %s" % self._localCopy
-                os.remove(self._localCopy)
+                try:
+                    os.remove(self._localCopy)
+                except:
+                    pass
+                self._localCopy = None
             for i,(fname,first,last) in enumerate(self._files):
                 if first <= iEv and iEv < last:
                     print "For event range [ %d, %d ) will use file %r " % (first,last,fname)
@@ -65,7 +84,7 @@ class EOSEventsWithDownload(object):
                     print "Will run from "+fname
                     self.events = FWLiteEvents([fname])
                     break
-        self.events.to(iEv)
+        self.events.to(iEv - self._files[self._fileindex][1])
         return self
     def __del__(self):
         todelete = getattr(self,'_localCopy',None)

@@ -160,7 +160,7 @@ lepAna = cfg.Analyzer(
     # loose electron selection
     loose_electron_id     = "POG_Cuts_ID_2012_Veto_full5x5",
     loose_electron_pt     = 7,
-    loose_electron_eta    = 2.4,
+    loose_electron_eta    = 2.5,
     loose_electron_dxy    = 0.05,
     loose_electron_dz     = 0.1,
     loose_electron_relIso = 0.5,
@@ -178,7 +178,7 @@ lepAna = cfg.Analyzer(
     miniIsolationPUCorr = 'rhoArea', # Allowed options: 'rhoArea' (EAs for 03 cone scaled by R^2), 'deltaBeta', 'raw' (uncorrected), 'weights' (delta beta weights; not validated)
     miniIsolationVetoLeptons = None, # use 'inclusive' to veto inclusive leptons and their footprint in all isolation cones
     # minimum deltaR between a loose electron and a loose muon (on overlaps, discard the electron)
-    min_dr_electron_muon = 0.02,
+    min_dr_electron_muon = 0.05,
     # do MC matching 
     do_mc_match = True, # note: it will in any case try it only on MC, not on data
     match_inclusiveLeptons = False, # match to all inclusive leptons
@@ -202,6 +202,7 @@ photonAna = cfg.Analyzer(
     etaMax = 2.5,
     gammaID = "PhotonCutBasedIDLoose_CSA14",
     do_mc_match = True,
+    do_randomCone = False,
 )
 
 
@@ -272,6 +273,7 @@ jetAna = cfg.Analyzer(
     cleanJetsFromTaus = False,
     cleanJetsFromIsoTracks = False,
     doQG = False,
+    cleanGenJetsFromPhoton = False
     )
 
 ## Fat Jets Analyzer (generic)
@@ -281,6 +283,7 @@ ttHFatJetAna = cfg.Analyzer(
     jetCol = 'slimmedJetsAK8',
     jetPt = 100.,
     jetEta = 2.4,
+    jetLepDR = 0.4,
     # v--- not implemented for AK8
     #jetLepDR = 0.4,
     #minLepPt = 10,
@@ -296,6 +299,7 @@ ttHFatJetAna = cfg.Analyzer(
 from CMGTools.TTHAnalysis.analyzers.ttHSVAnalyzer import ttHSVAnalyzer
 ttHSVAna = cfg.Analyzer(
     ttHSVAnalyzer, name="ttHSVAnalyzer",
+    do_mc_match = True,
 )
 
 # Secondary vertex analyzer
@@ -322,6 +326,8 @@ from CMGTools.TTHAnalysis.analyzers.ttHCoreEventAnalyzer import ttHCoreEventAnal
 ttHCoreEventAna = cfg.Analyzer(
     ttHCoreEventAnalyzer, name='ttHCoreEventAnalyzer',
     maxLeps = 4, ## leptons to consider
+    mhtForBiasedDPhi = "mhtJet40jvec",
+    jetForBiasedDPhi = "cleanJets",
     )
 
 ## Jet-MET based Skim (generic, but requirements depend on the final state)

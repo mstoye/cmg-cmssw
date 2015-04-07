@@ -44,7 +44,7 @@ class TauAnalyzer( Analyzer ):
 
         foundTau = False
         for tau in alltaus:
-            tau.associatedVertex = event.goodVertices[0]
+            tau.associatedVertex = event.goodVertices[0] if len(event.goodVertices)>0 else event.vertices[0]
             tau.lepVeto = False
             tau.idDecayMode = tau.tauID("decayModeFinding")
             tau.idDecayModeNewDMs = tau.tauID("decayModeFindingNewDMs")
@@ -107,6 +107,7 @@ class TauAnalyzer( Analyzer ):
         for lep in event.inclusiveTaus:
             gen = match[lep]
             lep.mcMatchId = 1 if gen else 0
+            lep.mcTau = gen
 
     def process(self, event):
         self.readCollections( event.input )

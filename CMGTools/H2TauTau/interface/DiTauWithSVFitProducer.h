@@ -28,10 +28,10 @@ public:
   typedef std::auto_ptr<DiTauCollection> OutPtr;
   explicit DiTauWithSVFitProducer(const edm::ParameterSet& iConfig);
   virtual ~DiTauWithSVFitProducer() {}
-  
+
 private:
   void produce(edm::Event& iEvent, const edm::EventSetup& iSetup);
-  
+
   /// source diobject inputtag
   edm::InputTag diTauSrc_;
 
@@ -43,15 +43,15 @@ private:
 
 
 template< typename T, typename U >
-DiTauWithSVFitProducer<T, U>::DiTauWithSVFitProducer(const edm::ParameterSet& iConfig) : 
+DiTauWithSVFitProducer<T, U>::DiTauWithSVFitProducer(const edm::ParameterSet& iConfig) :
   diTauSrc_(iConfig.getParameter<edm::InputTag>("diTauSrc")),
   warningNumbers_(0),
   verbose_(iConfig.getUntrackedParameter<bool>("verbose", false)),
   SVFitVersion_(iConfig.getParameter<int>("SVFitVersion")),
   fitAlgo_(iConfig.getParameter<std::string>("fitAlgo")) {
 
-  // will produce a collection containing a copy of each di-object in input, 
-  // with the SVFit mass set. 
+  // will produce a collection containing a copy of each di-object in input,
+  // with the SVFit mass set.
   produces<std::vector<DiTauObject>>();
 }
 
@@ -66,8 +66,8 @@ void DiTauWithSVFitProducer<T, U>::produce(edm::Event& iEvent, const edm::EventS
     std::cout << "DiTauWithSVFitProducer" << std::endl;
     std::cout << "+++" << std::endl;
   }
-    
-  std::string warningMessage; 
+
+  std::string warningMessage;
 
   svFitStandalone::kDecayType leg1type = svFitStandalone::kUndefinedDecayType;
   svFitStandalone::kDecayType leg2type = svFitStandalone::kUndefinedDecayType;
@@ -101,7 +101,7 @@ void DiTauWithSVFitProducer<T, U>::produce(edm::Event& iEvent, const edm::EventS
   } else if (typeid(U) == typeid(pat::Muon)) {
       leg2type=svFitStandalone::kTauToMuDecay;
       leg2type2011=NSVfitStandalone2011::kLepDecay;
-      warningMessage += " - second leg is electron from tau";
+      warningMessage += " - second leg is muon from tau";
   }
 
   const unsigned maxWarnings = 5;
@@ -109,7 +109,7 @@ void DiTauWithSVFitProducer<T, U>::produce(edm::Event& iEvent, const edm::EventS
     std::cout << warningMessage << std::endl;
     warningNumbers_ += 1;
   }
-    
+
   OutPtr pOut(new DiTauCollection());
 
   if(verbose_ && !diTauH->empty()) {
@@ -133,14 +133,14 @@ void DiTauWithSVFitProducer<T, U>::produce(edm::Event& iEvent, const edm::EventS
     if(verbose_) {
       std::cout << "  ---------------- " << std::endl;
       std::cout << "\trec boson: " << diTau << std::endl;
-      std::cout << "\t\tleg1: " << diTau.daughter(0) << std::endl;
-      std::cout << "\t\tleg2: " << diTau.daughter(1) << std::endl;
-      std::cout << "\t\tMET = " << met.et() << ", phi_MET = " << met.phi() << std::endl;      
+      std::cout << "\t\tleg1: " << *diTau.daughter(0) << std::endl;
+      std::cout << "\t\tleg2: " << *diTau.daughter(1) << std::endl;
+      std::cout << "\t\tMET = " << met.et() << ", phi_MET = " << met.phi() << std::endl;
     }
 
     double massSVFit=0.;
     float det=tmsig.Determinant();
-    if(det>1e-8) { 
+    if(det>1e-8) {
       if (SVFitVersion_ == 1) {
         //Note that this works only for di-objects where the tau is the leg1 and mu is leg2
         NSVfitStandalone2011::Vector measuredMET(met.p4().x(), met.p4().y(), 0);
@@ -148,7 +148,7 @@ void DiTauWithSVFitProducer<T, U>::produce(edm::Event& iEvent, const edm::EventS
         NSVfitStandalone2011::LorentzVector p1(diTau.daughter(0)->p4());
         NSVfitStandalone2011::LorentzVector p2(diTau.daughter(1)->p4());
         measuredTauLeptons.push_back(NSVfitStandalone2011::MeasuredTauLepton2011(leg2type2011,p2));
-        measuredTauLeptons.push_back(NSVfitStandalone2011::MeasuredTauLepton2011(leg1type2011,p1));    
+        measuredTauLeptons.push_back(NSVfitStandalone2011::MeasuredTauLepton2011(leg1type2011,p1));
         NSVfitStandaloneAlgorithm2011 algo(measuredTauLeptons,measuredMET, &tmsig, 0);
         algo.maxObjFunctionCalls(5000);
         algo.fit();
@@ -158,46 +158,80 @@ void DiTauWithSVFitProducer<T, U>::produce(edm::Event& iEvent, const edm::EventS
         std::vector<svFitStandalone::MeasuredTauLepton> measuredTauLeptons;
         int leg1DecayMode = -1;
         int leg2DecayMode = -1;
+        auto leg2Mass = diTau.daughter(1)->mass();
+        auto leg1Mass = diTau.daughter(0)->mass();
+
         if (leg1type == svFitStandalone::kTauToHadDecay) {
           leg1DecayMode = static_cast<pat::Tau*>(diTau.daughter(0))->decayMode();
         }
+        else if (leg1type == svFitStandalone::kTauToElecDecay)
+        {
+          // Reconstructed GSF electrons have non-fixed mass in CMS
+          leg1Mass = 0.000511;
+        }
+        else if (leg1type == svFitStandalone::kTauToMuDecay)
+        {
+          // Muons may sometimes have the charged pion mass
+          leg1Mass = 0.10566;
+        }
+
         if (leg2type == svFitStandalone::kTauToHadDecay) {
           leg2DecayMode = static_cast<pat::Tau*>(diTau.daughter(1))->decayMode();
         }
+        else if (leg2type == svFitStandalone::kTauToElecDecay)
+        {
+          leg2Mass = 0.000511;
+        }
+        else if (leg2type == svFitStandalone::kTauToMuDecay)
+        {
+          leg2Mass = 0.10566;
+        }
 
-        measuredTauLeptons.push_back(svFitStandalone::MeasuredTauLepton(leg2type, diTau.daughter(1)->pt(), diTau.daughter(1)->eta(), diTau.daughter(1)->phi(), diTau.daughter(1)->mass(), leg2DecayMode));
-        measuredTauLeptons.push_back(svFitStandalone::MeasuredTauLepton(leg1type, diTau.daughter(0)->pt(), diTau.daughter(0)->eta(), diTau.daughter(0)->phi(), diTau.daughter(0)->mass(), leg1DecayMode));
+        measuredTauLeptons.push_back(svFitStandalone::MeasuredTauLepton(leg2type, diTau.daughter(1)->pt(), diTau.daughter(1)->eta(), diTau.daughter(1)->phi(), leg2Mass, leg2DecayMode));
+        measuredTauLeptons.push_back(svFitStandalone::MeasuredTauLepton(leg1type, diTau.daughter(0)->pt(), diTau.daughter(0)->eta(), diTau.daughter(0)->phi(), leg1Mass, leg1DecayMode));
         SVfitStandaloneAlgorithm algo(measuredTauLeptons, met.px(), met.py(), tmsig, 0);
         algo.addLogM(false);
-        
+
         if (fitAlgo_ == "VEGAS")
           algo.integrateVEGAS();
         else if (fitAlgo_ == "MC")
           algo.integrateMarkovChain();
-        else 
+        else
           algo.integrate();
-        
+
         massSVFit = algo.mass();
-        
+
         // Add more fit results as user floats
         diTau.addUserFloat("massUncert", algo.massUncert());
-        diTau.addUserFloat("pt", algo.pt());
-        diTau.addUserFloat("ptUncert", algo.ptUncert());
+
+        if (fitAlgo_ == "MC"){
+          diTau.addUserFloat("pt"        , algo.pt()        );
+          diTau.addUserFloat("ptUncert"  , algo.ptUncert()  );
+          diTau.addUserFloat("fittedEta" , algo.eta()       );
+          diTau.addUserFloat("fittedPhi" , algo.phi()       );
+        }
+        else {
+          diTau.addUserFloat("pt"        , -99.);
+          diTau.addUserFloat("ptUncert"  , -99.);
+          diTau.addUserFloat("fittedEta" , -99.);
+          diTau.addUserFloat("fittedPhi" , -99.);
+        }
+
       } else {
-        std::cout << " Unrecognized SVFitVersion !!!!!!!!!!!!" << std::endl;    
+        std::cout << " Unrecognized SVFitVersion !!!!!!!!!!!!" << std::endl;
       }
     }
     // This is now handled via the user floats so we can keep the visible mass
     diTau.addUserFloat("mass", massSVFit);
 
     pOut->push_back(diTau);
-    
+
     if(verbose_) {
       std::cout << "\tm_vis = " << diTau.mass() << ", m_svfit = " << massSVFit << std::endl;
     }
   }
-  
-  iEvent.put(pOut); 
+
+  iEvent.put(pOut);
 
   if(verbose_ && !diTauH->empty()) {
     std::cout << "DiTauWithSVFitProducer done" << std::endl;

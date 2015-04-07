@@ -10,6 +10,8 @@
 #include "PhysicsTools/Heppy/interface/mt2w_bisect.h"
 #include "PhysicsTools/Heppy/interface/Hemisphere.h"
 #include "PhysicsTools/Heppy/interface/AlphaT.h"
+#include "PhysicsTools/Heppy/interface/Apc.h"
+#include "PhysicsTools/Heppy/interface/Megajet.h"
 #include "PhysicsTools/Heppy/interface/ReclusterJets.h"
 #include "PhysicsTools/Heppy/interface/IsolationComputer.h"
 
@@ -35,6 +37,8 @@ namespace {
     heppy::Davismt2 mt2;
     heppy::mt2w_bisect::mt2w mt2wlept;
     heppy::AlphaT alphaT;
+    heppy::Apc apc;
+    heppy::Megajet megajet;
     heppy::ReclusterJets reclusterJets(std::vector<float> px, std::vector<float> py, std::vector<float> pz, std::vector<float> E, double ktpower, double rparam);
     //  heppy::SimpleElectron fuffaElectron;
     //  ElectronEnergyCalibrator fuffaElectronCalibrator;
