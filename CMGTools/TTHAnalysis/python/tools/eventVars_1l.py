@@ -390,9 +390,9 @@ class EventVars1L:
 
         # deltaPhi between the (single) lepton and the reconstructed W (lep + MET)
         dPhiLepW = -999 # set default value to -999 to spot "empty" entries
-        if ret['nTightLeps25']>=1:
-          recoWp4 =  tightLeps25[0].p4() + metp4
-          dPhiLepW = tightLeps25[0].p4().DeltaPhi(recoWp4)
+        if ret['nTightLeps']>=1:
+          recoWp4 =  tightLeps[0].p4() + metp4
+          dPhiLepW = tightLeps[0].p4().DeltaPhi(recoWp4)
         ret["DeltaPhiLepW"] = dPhiLepW
 
         ##################################################################
@@ -432,9 +432,9 @@ class EventVars1L:
           SumMetClosestBJet = jets[idxMinDPhiBMET].p4() + metp4
           ret["mTClBPlusMET"] = SumMetClosestBJet.Mt()
           mTBJetMET = mt_2(jets[idxMinDPhiBMET].p4(),metp4)
-          if ret['nTightLeps25']>=1:
-            mLepBJet = (jets[idxMinDPhiBMET].p4() + tightLeps25[0].p4()).M()
-            mTLepMET = mt_2(tightLeps25[0].p4(),metp4)
+          if ret['nTightLeps']>=1:
+            mLepBJet = (jets[idxMinDPhiBMET].p4() + tightLeps[0].p4()).M()
+            mTLepMET = mt_2(tightLeps[0].p4(),metp4)
         else:
           ret["mTClBPlusMET"] = -999
 
@@ -450,15 +450,15 @@ class EventVars1L:
         MW2 = -9999
         neutrino1 = ROOT.TLorentzVector(0,0,0,0)
         neutrino2 = ROOT.TLorentzVector(0,0,0,0)
-        if(ret['nTightLeps25']==1) :
-          NeutrZList = GetZfromM(tightLeps25[0].p4(),metp4,81)
+        if(ret['nTightLeps']==1) :
+          NeutrZList = GetZfromM(tightLeps[0].p4(),metp4,81)
           MTW = NeutrZList[0]
           MetZ1= NeutrZList[1]
           MetZ2= NeutrZList[2]
           neutrino1.SetXYZM(metp4.Px(),metp4.Py(), MetZ1, 0)
           neutrino2.SetXYZM(metp4.Px(),metp4.Py(), MetZ2, 0)
-          MW1 = (neutrino1+tightLeps25[0].p4()).M()
-          MW2 = (neutrino2+tightLeps25[0].p4()).M()
+          MW1 = (neutrino1+tightLeps[0].p4()).M()
+          MW2 = (neutrino2+tightLeps[0].p4()).M()
         ret["MTW"]  = MTW
         ret["MW1"]  = MW1
         ret["MW2"]  = MW2
@@ -473,24 +473,24 @@ class EventVars1L:
         MtopDecor = []
 
 
-        if(ret['nTightLeps25']==1) :
+        if(ret['nTightLeps']==1) :
           for i,jet in  enumerate(centralJet30): #testing all jets as b-jet in top-reco
             ThisMTnub = sqrt(2*event.met_pt*jet.pt* (1-cos( metp4.DeltaPhi(jet.p4() ))))
             MTbnu.append(ThisMTnub)
-            ThislepBMass = (tightLeps25[0].p4()+jet.p4()).M()
+            ThislepBMass = (tightLeps[0].p4()+jet.p4()).M()
             LepBMass.append(ThislepBMass )
             ThisMTtop =  sqrt( 81.*81. + ThislepBMass *ThislepBMass + ThisMTnub*ThisMTnub)
             MTtop.append(ThisMTtop)
-            ThisMetovTop =  event.met_pt/(metp4+tightLeps25[0].p4()+jet.p4()).Pt()
+            ThisMetovTop =  event.met_pt/(metp4+tightLeps[0].p4()+jet.p4()).Pt()
             METovTop.append(ThisMetovTop)
-            ThisMetTop = metp4.DeltaPhi(metp4+tightLeps25[0].p4()+jet.p4())
+            ThisMetTop = metp4.DeltaPhi(metp4+tightLeps[0].p4()+jet.p4())
             METTopPhi.append(ThisMetTop)
-            ThisMtop = (neutrino1+tightLeps25[0].p4()+jet.p4()).M()
-            if(ThisMtop>(neutrino2+tightLeps25[0].p4()+jet.p4()).M()): ThisMtop = (neutrino2+tightLeps25[0].p4()+jet.p4()).M() #take smaller mtop of the two nu pz-solutions
+            ThisMtop = (neutrino1+tightLeps[0].p4()+jet.p4()).M()
+            if(ThisMtop>(neutrino2+tightLeps[0].p4()+jet.p4()).M()): ThisMtop = (neutrino2+tightLeps[0].p4()+jet.p4()).M() #take smaller mtop of the two nu pz-solutions
             Mtop.append(ThisMtop)
-            ThisMtopDecor  = sqrt((tightLeps25[0].p4()+jet.p4()).M()*(tightLeps25[0].p4()+jet.p4()).M()+ (neutrino1+jet.p4()).M()*(neutrino1+jet.p4()).M()+81*81)
-            if ThisMtopDecor > sqrt((tightLeps25[0].p4()+jet.p4()).M()*(tightLeps25[0].p4()+jet.p4()).M()+ (neutrino2+jet.p4()).M()*(neutrino2+jet.p4()).M()+81*81):
-              ThisMtopDecor =  sqrt((tightLeps25[0].p4()+jet.p4()).M()*(tightLeps25[0].p4()+jet.p4()).M()+ (neutrino2+jet.p4()).M()*(neutrino2+jet.p4()).M()+81*81)
+            ThisMtopDecor  = sqrt((tightLeps[0].p4()+jet.p4()).M()*(tightLeps[0].p4()+jet.p4()).M()+ (neutrino1+jet.p4()).M()*(neutrino1+jet.p4()).M()+81*81)
+            if ThisMtopDecor > sqrt((tightLeps[0].p4()+jet.p4()).M()*(tightLeps[0].p4()+jet.p4()).M()+ (neutrino2+jet.p4()).M()*(neutrino2+jet.p4()).M()+81*81):
+              ThisMtopDecor =  sqrt((tightLeps[0].p4()+jet.p4()).M()*(tightLeps[0].p4()+jet.p4()).M()+ (neutrino2+jet.p4()).M()*(neutrino2+jet.p4()).M()+81*81)
               MtopDecor.append(ThisMtopDecor)
 
 
@@ -521,7 +521,7 @@ class EventVars1L:
 #        print ThreeBestBTags
 #        print sortIdsByBTag
 
-        if(ret['nTightLeps25']==1) :
+        if(ret['nTightLeps']==1) :
           TopVarsMTbnuMin      .append(minValueForIdxList(MTbnu     , [ids[0] for ids in bTaggedJetsSorted]))
           TopVarsLepBMassMin   .append(minValueForIdxList(LepBMass  , [ids[0] for ids in bTaggedJetsSorted]))
           TopVarsMTtopMin      .append(minValueForIdxList(MTtop     , [ids[0] for ids in bTaggedJetsSorted]))
@@ -545,7 +545,7 @@ class EventVars1L:
 
 
 
-          mcMatchIdLep = tightLeps25[0].mcMatchId
+          mcMatchIdLep = tightLeps[0].mcMatchId
           iCorrectJet=-999
           correctJetBTagged = False
           if abs(mcMatchIdLep)==6:
@@ -603,12 +603,12 @@ class EventVars1L:
 
 
         centralJet30_DescFlag = []
-        tightLeps25_DescFlag = []
+        tightLeps_DescFlag = []
 
-        for i,l in enumerate(tightLeps25):
-          if abs(l.mcMatchId)==6: tightLeps25_DescFlag.append(1)    #top
-          elif abs(l.mcMatchId)==24: tightLeps25_DescFlag.append(2) #W-boson
-          else: tightLeps25_DescFlag.append(0)
+        for i,l in enumerate(tightLeps):
+          if abs(l.mcMatchId)==6: tightLeps_DescFlag.append(1)    #top
+          elif abs(l.mcMatchId)==24: tightLeps_DescFlag.append(2) #W-boson
+          else: tightLeps_DescFlag.append(0)
 
         for i,j in enumerate(centralJet30):
           if abs(j.mcMatchId)==6:
@@ -624,7 +624,7 @@ class EventVars1L:
 
 
         ret["centralJet30_DescFlag"]=centralJet30_DescFlag
-        ret["tightLeps25_DescFlag"]=tightLeps25_DescFlag
+        ret["tightLeps_DescFlag"]=tightLeps_DescFlag
 
 
 
@@ -633,8 +633,8 @@ class EventVars1L:
         #add topness and mt2W-variable (timing issue with topness: slows down the friend tree production by a factor of ~3)
         ret['Topness']=-999
         mt2w_values=[]
-        if ret['nTightLeps25']>=1: #topness and mt2w only make sense for
-          lep = getPhysObjectArray(tightLeps25[0])
+        if ret['nTightLeps']>=1: #topness and mt2w only make sense for
+          lep = getPhysObjectArray(tightLeps[0])
           if ret['nBJetCMVAMedium30']==0 and ret['nCentralJet30']>=3: #All combinations from the highest three light (or b-) jets
             consideredJets = [ getPhysObjectArray(jet) for jet in NonBJetCMVAMedium30[:3] ] # only throw arrays into the permutation business
             ftPerms = itertools.permutations(consideredJets, 2)
@@ -671,7 +671,7 @@ class EventVars1L:
               bdisc_jets.push_back(jet.btagCMVA)
 
             lepTLorentz = ROOT.TLorentzVector(0,0,0,0)
-            lepTLorentz.SetPtEtaPhiM(tightLeps25[0].pt, tightLeps25[0].eta, tightLeps25[0].phi, tightLeps25[0].mass)
+            lepTLorentz.SetPtEtaPhiM(tightLeps[0].pt, tightLeps[0].eta, tightLeps[0].phi, tightLeps[0].mass)
 
             if ret['nCentralJet30']>=3: # does not seem to work for njet =3 ??! # need to edit btag working point in the code...!! did not quickly find a twiki with official phys14 cmva working points
               tempTopness = topness.GetTopness(p4_jets,bdisc_jets,lepTLorentz,metp4) #this is really slow!
