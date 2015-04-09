@@ -52,11 +52,9 @@ class EventVars1L:
                       ("tightLeps25idx","I",10,"nTightLeps25"),("tightLeps25_DescFlag","I",10,"nTightLeps25"),
                       ("tightMu25idx","I",10,"nTightMu25"),
                       ("tightEl25idx","I",10,"nTightEl25"),("vetoLeps10idx","I",10,"nVetoLeps10"),
-                      # new
                       ("nTightLeps","I"),("tightLepsIdx","I",10,"nTightLeps"),("nVetoLeps","I"),("vetoLepsIdx","I",10,"nVetoLeps"),
                       ("nTightEl","I"),("tightElIdx","I",10,"nTightEl"),("nVetoEl","I"),("vetoElIdx","I",10,"nVetoEl"),
                       ("nTightMu","I"),("tightMuIdx","I",10,"nTightMu"),("nVetoMu","I"),("vetoMuIdx","I",10,"nVetoMu"),
-                      # jets, etc.
                       ("nCentralJet30","I"),("centralJet30idx","I",100,"nCentralJet30"),("centralJet30_DescFlag","F",100,"nCentralJet30"),
                       ("nBJetCMVAMedium30","I"),("BJetCMVAMedium30idx","I",50,"nBJetCMVAMedium30"),
                       "nGoodBJets_allJets", "nGoodBJets",
@@ -322,7 +320,7 @@ class EventVars1L:
         vetoMu = hardVetoMu
         vetoMuIdx = hardVetoMuIdx
 
-      else #if len(softTightLeps) > 0: or empty collection
+      else: #if len(softTightLeps) > 0: or empty collection
         tightLeps = softTightLeps
         tightLepsIdx = softTightLepsIdx
         vetoLeps = softVetoLeps
