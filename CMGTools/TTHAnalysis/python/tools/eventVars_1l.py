@@ -90,11 +90,11 @@ class EventVars1L:
       metp4.SetPtEtaPhiM(event.met_pt,event.met_eta,event.met_phi,event.met_mass)
       pmiss  =array.array('d',[event.met_pt * cos(event.met_phi), event.met_pt * sin(event.met_phi)] )
 
-        #isolation criteria as defined for PHYS14 1l synchronisation exercise
+      #isolation criteria as defined for PHYS14 1l synchronisation exercise
       ele_relisoCut = 0.14
       muo_relisoCut = 0.12
-        #ele tight id --> >2
-        #muo tight id ==1
+      #ele tight id --> >2
+      #muo tight id ==1
       centralEta = 2.4
 
       muo_minirelisoCut = 0.2
@@ -122,16 +122,14 @@ class EventVars1L:
       vetoLeps5idx = []
       vetoLeps5T5 = []
       vetoLeps5T5idx = []
+
+
       for i,l in enumerate(leps):
         if(abs(l.eta)<2.5):
-          #            tightMu = l.pt>25 and l.relIso03<muo_relisoCut and abs(l.pdgId)==13 and l.tightId==1
-          #            tightEl = l.pt>25 and l.relIso03<ele_relisoCut and abs(l.pdgId)==11 and l.tightId >2
           IsoMupT = False
           tightMu = False
           if l.pt>5 and l.pt<15 and l.miniRelIso<Lep_minirelisoCut and l.mediumMuonId==1 and abs(l.pdgId)==13 and l.sip3d<4.0: tightMu = True
           elif l.pt>15 and abs(l.pdgId)==13 and (l.miniRelIso<muo_minirelisoCut and l.mediumMuonId==1) and l.sip3d<4.0: tightMu = True
-            #elif l.pt>15 and l.miniRelIso<muo_minirelisoCut and abs(l.pdgId)==13: IsoMupT = True
-
 
           tightEl = False
           idElEta = False
@@ -157,24 +155,211 @@ class EventVars1L:
             elif l.pt>5:
               vetoLeps10.append(l); vetoLeps10idx.append(i)
 
+      #initialize the dictionary with a first entry
+      ret = { 'nTightLeps25'   : len(tightLeps25) }
+      ret['nTightMu25']  = len(tightMu25)
+      ret['nTightEl25']  = len(tightEl25)
+      ret['nVetoLeps10'] = len(vetoLeps10)
 
-        ret = { 'nTightLeps25'   : len(tightLeps25) } #initialize the dictionary with a first entry
-        ret['nTightMu25']  = len(tightMu25)
-        ret['nTightEl25']  = len(tightEl25)
-        ret['nVetoLeps10'] = len(vetoLeps10)
-
-        ret['tightLeps25idx'] = tightLeps25idx
-        ret['tightMu25idx']   = tightMu25idx
-        ret['tightEl25idx']   = tightEl25idx
-        ret['vetoLeps10idx']  = vetoLeps10idx
+      ret['tightLeps25idx'] = tightLeps25idx
+      ret['tightMu25idx']   = tightMu25idx
+      ret['tightEl25idx']   = tightEl25idx
+      ret['vetoLeps10idx']  = vetoLeps10idx
 
 
-        centralJet30 = []
-        centralJet30idx = []
-        for i,j in enumerate(jets):
-          if j.pt>30 and abs(j.eta)<centralEta:
-            centralJet30.append(j)
-            centralJet30idx.append(i)
+      ###########
+      # new
+      ###########
+
+      hardTightLeps = []
+      hardTightLepsIdx = []
+      hardVetoLeps = []
+      hardVetoLepsIdx = []
+
+      softTightLeps = []
+      softVetoLepsIdx = []
+      softVetoLeps = []
+      softVetoLepsIdx = []
+
+      hardTightMu = []
+      hardTightMuIdx = []
+      hardVetoMu = []
+      hardVetoMuIdx = []
+
+      softTightMu = []
+      softVetoMuIdx = []
+      softVetoMu = []
+      softVetoMuIdx = []
+
+      hardTightEl = []
+      hardTightElIdx = []
+      hardVetoEl = []
+      hardVetoElIdx = []
+
+      softTightEl = []
+      softVetoElIdx = []
+      softVetoEl = []
+      softVetoElIdx = []
+
+      for idx,lep in enumerate(leps):
+
+        # pass variables
+        passID = false
+        passIso = false
+
+        # check acceptance
+        if(abs(lep.eta)>2.5): continue
+
+        # muons
+        if(abs(lep.pdgId) == 13):
+
+          # hard: pt > 25
+          if lep.pt > 25:
+
+            # ID and Iso check:
+            if lep.mediumMuonId == 1 and lep.sip3d < 4.0: passID = true
+            if lep.miniRelIso < muo_minirelisoCut:        passIso = true
+
+            # fill
+            if passID and passIso:
+              hardTightLeps.append(lep); hardTightLepsIdx.append(idx);
+              hardTightMu.append(lep); hardTightMuIdx.append(idx);
+            else:
+              hardVetoLeps.append(lep); hardVetoLepsIdx.append(idx);
+              hardVetoMu.append(lep); hardVetoMuIdx.append(idx);
+
+          # soft muons + tight veto
+          elif lep.pt > 5:
+
+            # veto fro tight if pt > 10
+            if lep.pt > 10:
+              hardVetoLeps.append(lep); hardVetoLepsIdx.append(idx);
+              hardVetoMu.append(lep); hardVetoMuIdx.append(idx);
+
+            # Soft leptons
+
+            # ID check
+            if lep.mediumMuonId == 1: passID = true
+            # iso check
+            if lep.pt < 15   and lep.miniRelIso < Lep_minirelisoCut: passIso = true
+            elif lep.pt > 15 and lep.miniRelIso < muo_minirelisoCut: passIso = true
+
+            # fill
+            if passID and passIso:
+              softTightLeps.append(lep); softTightLepsIdx.append(idx);
+              softTightMu.append(lep); softTightMuIdx.append(idx);
+            else:
+              softVetoLeps.append(lep); softVetoLepsIdx.append(idx);
+              softVetoMu.append(lep); softVetoMuIdx.append(idx);
+
+        # electrons
+        if(abs(lep.pdgId) == 11):
+
+          # hard: pt > 25
+          if lep.pt > 25:
+
+            # Iso check:
+            if lep.miniRelIso < ele_minirelisoCut: passIso = true
+            # Eta dependent MVA ID check:
+            if abs(lep.eta) < 0.8 and lep.mvaIdPhys14 > goodEl_mvaPhys14_eta08_T: passID = true
+            elif abs(lep.eta) >= 0.8 and abs(lep.eta) < 1.44 and lep.mvaIdPhys14 > goodEl_mvaPhys14_eta104_T: passID = true
+            elif abs(lep.eta) >= 1.57 and lep.mvaIdPhys14 > goodEl_mvaPhys14_eta204_T: passID = true
+            # more checks:
+            if not (lep.lostHits <= goodEl_lostHits and lep.convVeto and lep.sip3d < goodEl_sip3d): passID = false
+
+            # fill
+            if passID and passIso:
+              hardTightLeps.append(lep); hardTightLepsIdx.append(idx);
+              hardTightEl.append(lep); hardTightElIdx.append(idx);
+            else:
+              hardVetoLeps.append(lep); hardVetoLepsIdx.append(idx);
+              hardVetoEl.append(lep); hardVetoElIdx.append(idx);
+
+          # soft muons + tight veto
+          elif lep.pt > 5:
+
+            # veto fro tight if pt > 10
+            if lep.pt > 10:
+              hardVetoLeps.append(lep); hardVetoLepsIdx.append(idx);
+              hardVetoEl.append(lep); hardVetoElIdx.append(idx);
+
+            # Soft leptons
+            # MVA(ID+Iso) check
+            if lep.mvaSusy>0.53: passID = true
+            # more checks:
+            if not (lep.lostHits <= goodEl_lostHits and lep.convVeto and lep.sip3d < goodEl_sip3d): passID = false
+
+            # fill
+            if passID and passIso:
+              softTightLeps.append(lep); softTightLepsIdx.append(idx);
+              softTightEl.append(lep); softTightElIdx.append(idx);
+            else:
+              softVetoLeps.append(lep); softVetoLepsIdx.append(idx);
+              softVetoEl.append(lep); softVetoElIdx.append(idx);
+
+      # end lepton loop
+      ####
+
+      # choose common lepton collection: select hard or soft lepton
+      if len(hardTightLeps) > 0:
+        tightLeps = hardTightLeps
+        tightLepsIdx = hardTightLepsIdx
+        vetoLeps = hardVetoLeps
+        vetoLepsIdx = hardVetoLepsIdx
+
+        tightEl = hardTightEl
+        tightElIdx = hardTightElIdx
+        vetoEl = hardVetoEl
+        vetoElIdx = hardVetoElIdx
+
+        tightMu = hardTightMu
+        tightMuIdx = hardTightMuIdx
+        vetoMu = hardVetoMu
+        vetoMuIdx = hardVetoMuIdx
+
+      else #if len(softTightLeps) > 0: or empty collection
+        tightLeps = softTightLeps
+        tightLepsIdx = softTightLepsIdx
+        vetoLeps = softVetoLeps
+        vetoLepsIdx = softVetoLepsIdx
+
+        tightEl = softTightEl
+        tightElIdx = softTightElIdx
+        vetoEl = softVetoEl
+        vetoElIdx = softVetoElIdx
+
+        tightMu = softTightMu
+        tightMuIdx = softTightMuIdx
+        vetoMu = softVetoMu
+        vetoMuIdx = softVetoMuIdx
+
+
+      #initialize the dictionary with a first entry
+      ret = { 'nTightLeps'   : len(tightLeps) }
+      ret['tightLepsIdx'] = tightLepsIdx
+      ret['nVetoLeps'] = len(vetoLeps)
+      ret['vetoLepsIdx'] = vetoLepsIdx
+
+      ret['nTightEl'] = len(tightEl)
+      ret['tightElIdx'] = tightElIdx
+      ret['nVetoEl'] = len(vetoEl)
+      ret['vetoElIdx'] = vetoElIdx
+
+      ret['nTightMu'] = len(tightMu)
+      ret['tightMuIdx'] = tightMuIdx
+      ret['nVetoMu'] = len(vetoMu)
+      ret['vetoMuIdx'] = vetoMuIdx
+
+      ########
+      # JETS
+      ########
+
+      centralJet30 = []
+      centralJet30idx = []
+      for i,j in enumerate(jets):
+        if j.pt>30 and abs(j.eta)<centralEta:
+          centralJet30.append(j)
+          centralJet30idx.append(i)
 
         ret['nCentralJet30']   = len(centralJet30)
         ret['centralJet30idx'] = centralJet30idx
