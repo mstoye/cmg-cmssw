@@ -118,28 +118,34 @@ class EventVars1L:
         vetoLeps10idx = []
         vetoLeps10T10 = []
         vetoLeps10T10idx = []
+        vetoLeps5 = []
+        vetoLeps5idx = []
+        vetoLeps5T5 = []
+        vetoLeps5T5idx = []
         for i,l in enumerate(leps):
           if(abs(l.eta)<2.5):
 #            tightMu = l.pt>25 and l.relIso03<muo_relisoCut and abs(l.pdgId)==13 and l.tightId==1
 #            tightEl = l.pt>25 and l.relIso03<ele_relisoCut and abs(l.pdgId)==11 and l.tightId >2 
             IsoMupT = False
             tightMu = False
-            if l.pt>5 and l.pt<10 and l.miniRelIso<Lep_minirelisoCut and abs(l.pdgId)==13: IsoMupT = True
-            elif l.pt>15 and l.miniRelIso<muo_minirelisoCut and abs(l.pdgId)==13: IsoMupT = True
+            if l.pt>5 and l.pt<15 and l.miniRelIso<Lep_minirelisoCut and l.mediumMuonId==1 and abs(l.pdgId)==13 and l.sip3d<4.0: tightMu = True
+            elif l.pt>15 and abs(l.pdgId)==13 and (l.miniRelIso<muo_minirelisoCut and l.mediumMuonId==1) and l.sip3d<4.0: tightMu = True 
+            #elif l.pt>15 and l.miniRelIso<muo_minirelisoCut and abs(l.pdgId)==13: IsoMupT = True
 
-            if l.pt>5 and abs(l.pdgId)==13 and (IsoMupT and l.mediumMuonId==1) and l.sip3d<4.0: tightMu = True 
             
             tightEl = False
             idElEta = False
+
             IsoElpT = False
-            if l.pt>5 and  abs(l.pdgId)==11 and abs(l.eta)<0.8 and l.mvaIdPhys14 > goodEl_mvaPhys14_eta08_T: idElEta = True
-            elif l.pt>5 and abs(l.pdgId)==11 and abs(l.eta)>=0.8 and abs(l.eta)<1.44 and l.mvaIdPhys14 > goodEl_mvaPhys14_eta104_T: idElEta = True
-            elif l.pt>5 and abs(l.pdgId)==11 and abs(l.eta)>=1.57 and l.mvaIdPhys14 > goodEl_mvaPhys14_eta204_T: idElEta = True
+            if l.pt>25 and  abs(l.pdgId)==11 and abs(l.eta)<0.8 and l.mvaIdPhys14 > goodEl_mvaPhys14_eta08_T: idElEta = True
+            elif l.pt>25 and abs(l.pdgId)==11 and abs(l.eta)>=0.8 and abs(l.eta)<1.44 and l.mvaIdPhys14 > goodEl_mvaPhys14_eta104_T: idElEta = True
+            elif l.pt>25 and abs(l.pdgId)==11 and abs(l.eta)>=1.57 and l.mvaIdPhys14 > goodEl_mvaPhys14_eta204_T: idElEta = True
 
-            if l.pt>5 and l.pt<15 and l.miniRelIso<Lep_minirelisoCut and abs(l.pdgId)==11: IsoElpT = True
-            elif l.pt>15 and l.miniRelIso<ele_minirelisoCut and abs(l.pdgId)==11: IsoElpT = True
+            if l.pt>5 and l.pt<25 and l.mvaSusy>0.53 and abs(l.pdgId)==11: IsoElpT = True
+            elif l.pt>25 and l.miniRelIso<ele_minirelisoCut and abs(l.pdgId)==11: IsoElpT = True
 
-            if l.pt>5 and abs(l.pdgId)==11 and abs(l.eta)<2.4 and (abs(l.eta) < 1.44 or abs(l.eta) > 1.57) and (IsoElpT and idElEta) and l.lostHits <= goodEl_lostHits and  l.convVeto and l.sip3d < goodEl_sip3d:
+            if l.pt>5 and l.pt<25 and abs(l.pdgId)==11 and abs(l.eta)<2.4 and (abs(l.eta) < 1.44 or abs(l.eta) > 1.57) and IsoElpT and l.lostHits <= goodEl_lostHits and  l.convVeto: tightEl = True
+            elif l.pt>25 and abs(l.pdgId)==11 and abs(l.eta)<2.4 and (abs(l.eta) < 1.44 or abs(l.eta) > 1.57) and (IsoElpT and idElEta) and l.lostHits <= goodEl_lostHits and  l.convVeto and l.sip3d < goodEl_sip3d:
               tightEl = True
 
             if tightMu:
