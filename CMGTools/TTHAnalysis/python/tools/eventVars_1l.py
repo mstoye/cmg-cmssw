@@ -151,6 +151,11 @@ class EventVars1L:
 			if(abs(lep.pdgId) == 13):
 				# hard: pt > 25
 				if lep.pt > 25:
+
+					# all hard leptons are veto for soft
+					softVetoLeps.append(lep); softVetoLepsIdx.append(idx);
+					softVetoMu.append(lep); softVetoMuIdx.append(idx);
+
 					# ID and Iso check:
 					if lep.mediumMuonId == 1 and lep.sip3d < 4.0: passID = True
 					if lep.miniRelIso < muo_minirelisoCut:        passIso = True
@@ -188,6 +193,11 @@ class EventVars1L:
 			if(abs(lep.pdgId) == 11):
 				# hard: pt > 25
 				if lep.pt > 25:
+
+					# all hard leptons are veto for soft
+					softVetoLeps.append(lep); softVetoLepsIdx.append(idx);
+					softVetoEl.append(lep); softVetoElIdx.append(idx);
+
 					# Iso check:
 					if lep.miniRelIso < ele_minirelisoCut: passIso = True
 					# Eta dependent MVA ID check:
