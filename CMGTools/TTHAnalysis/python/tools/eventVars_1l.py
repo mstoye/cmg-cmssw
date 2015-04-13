@@ -102,9 +102,9 @@ class EventVars1L:
 		goodEl_lostHits = 1
 		goodEl_sip3d = 4
 
-		goodEl_mvaPhys14_eta08_T = 0.73;
-		goodEl_mvaPhys14_eta104_T = 0.57;
-		goodEl_mvaPhys14_eta204_T = 0.05;
+		goodEl_mvaPhys14_eta0p8_T = 0.73;
+		goodEl_mvaPhys14_eta1p4_T = 0.57;
+		goodEl_mvaPhys14_eta2p4_T = 0.05;
 
 		### LEPTONS
 
@@ -201,9 +201,9 @@ class EventVars1L:
 					# Iso check:
 					if lep.miniRelIso < ele_minirelisoCut: passIso = True
 					# Eta dependent MVA ID check:
-					if abs(lep.eta) < 0.8 and lep.mvaIdPhys14 > goodEl_mvaPhys14_eta08_T: passID = True
-					elif abs(lep.eta) >= 0.8 and abs(lep.eta) < 1.44 and lep.mvaIdPhys14 > goodEl_mvaPhys14_eta104_T: passID = True
-					elif abs(lep.eta) >= 1.57 and lep.mvaIdPhys14 > goodEl_mvaPhys14_eta204_T: passID = True
+					if abs(lep.eta) < 0.8 and lep.mvaIdPhys14 > goodEl_mvaPhys14_eta0p8_T: passID = True
+					elif abs(lep.eta) >= 0.8 and abs(lep.eta) < 1.44 and lep.mvaIdPhys14 > goodEl_mvaPhys14_eta1p4_T: passID = True
+					elif abs(lep.eta) >= 1.57 and lep.mvaIdPhys14 > goodEl_mvaPhys14_eta2p4_T: passID = True
 					# more checks:
 					if not (lep.lostHits <= goodEl_lostHits and lep.convVeto and lep.sip3d < goodEl_sip3d): passID = False
 
