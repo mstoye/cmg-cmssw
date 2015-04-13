@@ -593,11 +593,14 @@ class EventVars1L:
 			lepTLorentz = ROOT.TLorentzVector(0,0,0,0)
 			lepTLorentz.SetPtEtaPhiM(tightLeps[0].pt, tightLeps[0].eta, tightLeps[0].phi, tightLeps[0].mass)
 
-			if ret['nCentralJet30']>=3: # does not seem to work for njet =3 ??! # need to edit btag working point in the code...!! did not quickly find a twiki with official phys14 cmva working points
+			# does not seem to work for njet =3 ??! # need to edit btag working point in the code...!! did not quickly find a twiki with official phys14 cmva working points
+			if (ret['nCentralJet30']>=3) and (ret['nBJetCMVAMedium30']>=1) :
 				tempTopness = topness.GetTopness(p4_jets,bdisc_jets,lepTLorentz,metp4) #this is really slow!
 				if tempTopness <=0:
 					print tempTopness, "this will fail"
-				ret['Topness'] = log(tempTopness) #this is really slow!
+				else:
+					ret['Topness'] = log(tempTopness) #this is really slow!
+
 		if len(mt2w_values)>0:
 			ret["MT2W"]=min(mt2w_values)
 		else:
