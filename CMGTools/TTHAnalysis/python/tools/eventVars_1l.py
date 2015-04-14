@@ -141,7 +141,9 @@ class EventVars1L:
 		for idx,lep in enumerate(leps):
 
 			# check acceptance
-			if(abs(lep.eta)>2.5): continue
+			lepEta = abs(lep.eta)
+
+			if(lepEta > 2.5): continue
 
 			# muons
 			if(abs(lep.pdgId) == 13):
@@ -206,9 +208,9 @@ class EventVars1L:
 					# Iso check:
 					if lep.miniRelIso < ele_minirelisoCut: passIso = True
 					# Eta dependent MVA ID check:
-					if abs(lep.eta) < 0.8 and lep.mvaIdPhys14 > goodEl_mvaPhys14_eta0p8_T: passID = True
-					elif abs(lep.eta) >= 0.8 and abs(lep.eta) < 1.44 and lep.mvaIdPhys14 > goodEl_mvaPhys14_eta1p4_T: passID = True
-					elif abs(lep.eta) >= 1.57 and and abs(lep.eta) < 2.4 and lep.mvaIdPhys14 > goodEl_mvaPhys14_eta2p4_T: passID = True
+					if lepEta < 0.8 and lep.mvaIdPhys14 > goodEl_mvaPhys14_eta0p8_T: passID = True
+					elif lepEta >= 0.8 and lepEta < 1.44 and lep.mvaIdPhys14 > goodEl_mvaPhys14_eta1p4_T: passID = True
+					elif lepEta >= 1.57 and and lepEta < 2.4 and lep.mvaIdPhys14 > goodEl_mvaPhys14_eta2p4_T: passID = True
 					# more checks:
 					if not (lep.lostHits <= goodEl_lostHits and lep.convVeto and lep.sip3d < goodEl_sip3d): passID = False
 
@@ -230,10 +232,10 @@ class EventVars1L:
 
 					# Soft leptons
 					# check eta
-					if (abs(lep.eta) < 1.44 or abs(lep.eta) >= 1.57) and abs(lep.eta) < 2.4: passEta = True
+					if (lepEta < 1.44 or lepEta >= 1.57) and lepEta < 2.4: passEta = True
 
 					# MVA(ID+Iso) check
-					if lep.mvaSusy>0.53: passID = True
+					if lep.mvaSusy > 0.53: passID = True
 					# more checks:
 					if not (lep.lostHits <= goodEl_lostHits and lep.convVeto and lep.sip3d < goodEl_sip3d): passID = False
 
