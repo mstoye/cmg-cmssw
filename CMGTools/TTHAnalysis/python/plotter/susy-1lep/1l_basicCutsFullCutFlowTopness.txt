@@ -1,5 +1,5 @@
 == 1 tight lepton: nTightLeps ==1&&LepGood_pt[tightLepsIdx[0]]>25
-no VetoLeps10: nVetoLeps10==0
+no VetoLeps: nVetoLeps10==0
 geq 6j: nCentralJet30>=6
 leading/subleading > 80: LSLjetptGT80==1
 ht500: htJet30j>500

@@ -1,5 +1,5 @@
 1tl: nTightLeps==1&&LepGood_pt[tightLepsIdx[0]]>25
-0vl: nVetoLeps10==0
+0vl: nVetoLeps==0
 geq6j: nCentralJet30>=6
 lsl80: LSLjetptGT80==1
 ht500: htJet30j>500
