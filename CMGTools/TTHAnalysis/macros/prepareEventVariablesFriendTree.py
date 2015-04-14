@@ -113,7 +113,6 @@ if len(options.chunks) != 0 and len(options.datasets) != 1:
 	exit()
 
 jobs = []
-arrayjobs = []
 
 for D in glob(args[0]+"/*"):
 	treename = options.tree
@@ -208,7 +207,7 @@ if options.naf:
 	print 'Going to submit', len(jobs), 'jobs with', subCmd
 	args=subCmd.split()
 
-	print subprocess.Popen(args)
+	subprocess.Popen(args)
 
 	jobList.close()
 	exit()
