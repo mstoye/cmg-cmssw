@@ -178,7 +178,7 @@ class EventVars1L:
 						hardVetoMu.append(lep); hardVetoMuIdx.append(idx);
 					# Soft leptons
 					# ID check
-					if lep.mediumMuonId == 1: passID = True
+					if lep.mediumMuonId == 1 and lep.sip3d < 4.0: passID = True
 					# iso check
 					if lep.pt < 15   and lep.miniRelIso < Lep_minirelisoCut: passIso = True
 					elif lep.pt > 15 and lep.miniRelIso < muo_minirelisoCut: passIso = True
@@ -197,6 +197,7 @@ class EventVars1L:
 				passID = False
 				passIso = False
 				passEta = False
+				passConv = False
 
 				# hard: pt > 25
 				if lep.pt > 25:
@@ -211,11 +212,11 @@ class EventVars1L:
 					if lepEta < 0.8 and lep.mvaIdPhys14 > goodEl_mvaPhys14_eta0p8_T: passID = True
 					elif lepEta >= 0.8 and lepEta < 1.44 and lep.mvaIdPhys14 > goodEl_mvaPhys14_eta1p4_T: passID = True
 					elif lepEta >= 1.57 and lepEta < 2.4 and lep.mvaIdPhys14 > goodEl_mvaPhys14_eta2p4_T: passID = True
-					# more checks:
-					if not (lep.lostHits <= goodEl_lostHits and lep.convVeto and lep.sip3d < goodEl_sip3d): passID = False
+					# conversion check
+					if lep.lostHits <= goodEl_lostHits and lep.convVeto and lep.sip3d < goodEl_sip3d: passConv = True
 
 					# fill
-					if passID and passIso:
+					if passID and passIso and passConv:
 						hardTightLeps.append(lep); hardTightLepsIdx.append(idx);
 						hardTightEl.append(lep); hardTightElIdx.append(idx);
 					else:
@@ -236,11 +237,11 @@ class EventVars1L:
 
 					# MVA(ID+Iso) check
 					if lep.mvaSusy > 0.53: passID = True
-					# more checks:
-					if not (lep.lostHits <= goodEl_lostHits and lep.convVeto and lep.sip3d < goodEl_sip3d): passID = False
+					# conversion check
+					if lep.lostHits <= goodEl_lostHits and lep.convVeto and lep.sip3d < goodEl_sip3d: passConv = True
 
 					# fill
-					if passID and passEta:
+					if passID and passEta and passConv:
 						softTightLeps.append(lep); softTightLepsIdx.append(idx);
 						softTightEl.append(lep); softTightElIdx.append(idx);
 					else:
