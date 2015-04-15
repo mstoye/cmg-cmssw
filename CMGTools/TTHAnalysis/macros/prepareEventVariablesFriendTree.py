@@ -137,8 +137,10 @@ for D in glob(args[0]+"/*"):
 		if options.newOnly:
 			fout = "%s/evVarFriend_%s.root" % (args[1],short)
 			if os.path.exists(fout):
-				f = ROOT.TFile.Open(fname);
-				t = f.Get(treename)
+				#f = ROOT.TFile.Open(fname);
+				#t = f.Get(treename)
+				f = ROOT.TFile.Open(fout);
+				t = f.Get(options.treeDir+'/t')
 				if t.GetEntries() != entries:
 					print "Component %s has to be remade, mismatching number of entries (%d vs %d)" % (short, entries, t.GetEntries())
 					f.Close()
