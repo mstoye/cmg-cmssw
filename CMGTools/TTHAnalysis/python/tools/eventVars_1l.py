@@ -51,6 +51,7 @@ class EventVars1L:
 						  ("tightLeps_DescFlag","I",10,"nTightLeps"),
 						  ("nTightEl","I"),("tightElIdx","I",10,"nTightEl"),("nVetoEl","I"),("vetoElIdx","I",10,"nVetoEl"),
 						  ("nTightMu","I"),("tightMuIdx","I",10,"nTightMu"),("nVetoMu","I"),("vetoMuIdx","I",10,"nVetoMu"),
+						  'HT','ST','LepGood1_pt','LepGood1_pdgId','LepGood1_eta',
 						  ("nCentralJet30","I"),("centralJet30idx","I",100,"nCentralJet30"),("centralJet30_DescFlag","F",100,"nCentralJet30"),
 						  ("nBJetCMVAMedium30","I"),("BJetCMVAMedium30idx","I",50,"nBJetCMVAMedium30"),
 						  "nGoodBJets_allJets", "nGoodBJets",
@@ -99,7 +100,7 @@ class EventVars1L:
 		Lep_minirelisoCut = 0.4
 		ele_minirelisoCut = 0.1
 
-		goodEl_lostHits = 1
+		goodEl_lostHits = 0
 		goodEl_sip3d = 4
 
 		goodEl_mvaPhys14_eta0p8_T = 0.73;
@@ -299,6 +300,20 @@ class EventVars1L:
 		ret['nVetoMu'] = len(vetoMu)
 		ret['vetoMuIdx'] = vetoMuIdx
 
+		# save leading lepton vars
+		if len(tightLeps) > 0:
+			ret['LepGood1_pt'] = tightLeps[0].pt
+			ret['LepGood1_eta'] = tightLeps[0].eta
+			ret['LepGood1_pdgId'] = tightLeps[0].pdgId
+		elif len(leps) > 0: # fill it with leading lepton
+			ret['LepGood1_pt'] = leps[0].pt
+			ret['LepGood1_eta'] = leps[0].eta
+			ret['LepGood1_pdgId'] = leps[0].pdgId
+		else:
+			ret['LepGood1_pt'] = -99
+			ret['LepGood1_eta'] = -99
+			ret['LepGood1_pdgId'] = -99
+
 		### JETS
 
 		centralJet30 = []
@@ -316,6 +331,8 @@ class EventVars1L:
 		ret['htJet30j']  = sum([j.pt for j in centralJet30])
 		ret['htJet30ja'] = sum([j.pt for j in jets if j.pt>30])
 
+		ret['HT'] = ret['htJet30j']
+
 		BJetCMVAMedium30 = []
 		BJetCMVAMedium30idx = []
 		NonBJetCMVAMedium30 = []
@@ -331,16 +348,21 @@ class EventVars1L:
 		ret['nGoodBJets']    = sum([j.btagCMVA>0.732 for j in centralJet30])
 		ret['nGoodBJets_allJets']    = sum([j.btagCMVA>0.732 and j.pt>30 and abs(j.eta)<centralEta for j in jets]) # where is the working point defined?
 
-
 		#plain copy of MET pt (just as an example and cross-check for proper friend tree production)
 		ret["METCopyPt"] = metp4.Pt()
 
 		# deltaPhi between the (single) lepton and the reconstructed W (lep + MET)
 		dPhiLepW = -999 # set default value to -999 to spot "empty" entries
+		# ST of lepton and MET
+		ST = -999
+
 		if ret['nTightLeps']>=1:
 			recoWp4 =  tightLeps[0].p4() + metp4
 			dPhiLepW = tightLeps[0].p4().DeltaPhi(recoWp4)
+			ST = tightLeps[0].pt + event.met_pt
+
 		ret["DeltaPhiLepW"] = dPhiLepW
+		ret['ST'] = ST
 
 		##################################################################
 		# The following variables need to be double-checked for validity #
@@ -367,8 +389,6 @@ class EventVars1L:
 			 minDPhiJMET=dPhiJMET
 
 		ret["minDPhiJMET"] = minDPhiJMET
-
-
 
 		# transverse mass of (closest (to MET) BJet, MET), (closest (to MET) BJet, lepton),
 		# mass of (closest (to MET) BJet, lepton); need to be double-checked
@@ -602,23 +622,26 @@ class EventVars1L:
 					mt2wSNT.set_momenta(lep, perm[0], perm[1], pmiss)
 					mt2w_values.append(mt2wSNT.get_mt2w())
 
-			p4_jets = std.vector(TLorentzVector)();
-			bdisc_jets = std.vector('float')();
-
-			for jet in centralJet30:
-				jetTLorentz = ROOT.TLorentzVector(0,0,0,0)
-				jetTLorentz.SetPtEtaPhiM(jet.pt, jet.eta, jet.phi, jet.mass)
-				p4_jets.push_back(jetTLorentz)
-				bdisc_jets.push_back(jet.btagCMVA)
-
-			lepTLorentz = ROOT.TLorentzVector(0,0,0,0)
-			lepTLorentz.SetPtEtaPhiM(tightLeps[0].pt, tightLeps[0].eta, tightLeps[0].phi, tightLeps[0].mass)
-
 			# does not seem to work for njet =3 ??! # need to edit btag working point in the code...!! did not quickly find a twiki with official phys14 cmva working points
 			if (ret['nCentralJet30']>=3) and (ret['nBJetCMVAMedium30']>=1) :
+
+				p4_jets = std.vector(TLorentzVector)();
+				bdisc_jets = std.vector('float')();
+
+				for jet in centralJet30:
+					jetTLorentz = ROOT.TLorentzVector(0,0,0,0)
+					jetTLorentz.SetPtEtaPhiM(jet.pt, jet.eta, jet.phi, jet.mass)
+					p4_jets.push_back(jetTLorentz)
+					bdisc_jets.push_back(jet.btagCMVA)
+
+				lepTLorentz = ROOT.TLorentzVector(0,0,0,0)
+				lepTLorentz.SetPtEtaPhiM(tightLeps[0].pt, tightLeps[0].eta, tightLeps[0].phi, tightLeps[0].mass)
+
+				# calc topness
 				tempTopness = topness.GetTopness(p4_jets,bdisc_jets,lepTLorentz,metp4) #this is really slow!
 				if tempTopness <=0:
 					print tempTopness, "this will fail"
+					ret['Topness'] = -999
 				else:
 					ret['Topness'] = log(tempTopness) #this is really slow!
 
