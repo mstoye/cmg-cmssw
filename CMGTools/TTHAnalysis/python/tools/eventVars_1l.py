@@ -73,7 +73,7 @@ class EventVars1L:
 		return self.branches[:]
 
 
-	def __call__(self,event):
+	def __call__(self,event,keyvals):
 
 		# make python lists as Collection does not support indexing in slices
 		genleps = [l for l in Collection(event,"genLep","ngenLep")]
