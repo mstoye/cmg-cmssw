@@ -20,7 +20,6 @@ class EventVars1LGenLevel:
 		genleps = [l for l in Collection(event,"genLep","ngenLep")]
 		genParts = [l for l in Collection(event,"GenPart","nGenPart")]
 		ngenleps = len(genleps); ngenParts = len (genParts)
-		print 'Got this', keyvals.keys()
 
 		GenDeltaPhiLepWSum=-999
 		GenDeltaPhiLepWDirect=-999

@@ -37,19 +37,18 @@ MODULES = []
 #from CMGTools.TTHAnalysis.tools.eventVars_MT2 import EventVarsMT2
 #MODULES.append( ('MT2', EventVarsMT2()) )
 
-#from CMGTools.TTHAnalysis.tools.eventVars_1l import EventVars1L
-#MODULES.append( ('1l_Basics', EventVars1L()) )
-
 from CMGTools.TTHAnalysis.tools.eventVars_1l_base import EventVars1L_base
 MODULES.append( ('1l_Basics', EventVars1L_base()) )
 from CMGTools.TTHAnalysis.tools.eventVars_1l_top import EventVars1L_Top
 MODULES.append( ('1l_TopVars', EventVars1L_Top()) )
 '''
+from CMGTools.TTHAnalysis.tools.eventVars_1l import EventVars1L
+MODULES.append( ('1l_Basics', EventVars1L()) )
+'''
 from CMGTools.TTHAnalysis.tools.eventVars_1l_genLevel import EventVars1LGenLevel
 MODULES.append( ('1l_BasicsGen', EventVars1LGenLevel()) )
 from CMGTools.TTHAnalysis.tools.resolvedTopTagVars_1l import resolvedTopTagVars1l
 MODULES.append( ('1l_resolvedTopTagVars', resolvedTopTagVars1l()) )
-'''
 
 class VariableProducer(Module):
 	def __init__(self,name,booker,modules):
