@@ -37,15 +37,18 @@ MODULES = []
 #from CMGTools.TTHAnalysis.tools.eventVars_MT2 import EventVarsMT2
 #MODULES.append( ('MT2', EventVarsMT2()) )
 
-
+from CMGTools.TTHAnalysis.tools.eventVars_1l_base import EventVars1L_base
+MODULES.append( ('1l_Basics', EventVars1L_base()) )
+from CMGTools.TTHAnalysis.tools.eventVars_1l_top import EventVars1L_Top
+MODULES.append( ('1l_TopVars', EventVars1L_Top()) )
+'''
 from CMGTools.TTHAnalysis.tools.eventVars_1l import EventVars1L
 MODULES.append( ('1l_Basics', EventVars1L()) )
+'''
 from CMGTools.TTHAnalysis.tools.eventVars_1l_genLevel import EventVars1LGenLevel
 MODULES.append( ('1l_BasicsGen', EventVars1LGenLevel()) )
 from CMGTools.TTHAnalysis.tools.resolvedTopTagVars_1l import resolvedTopTagVars1l
 MODULES.append( ('1l_resolvedTopTagVars', resolvedTopTagVars1l()) )
-
-
 
 class VariableProducer(Module):
 	def __init__(self,name,booker,modules):
@@ -69,11 +72,13 @@ class VariableProducer(Module):
 				else:
 					self.t.branch(B ,"F")
 	def analyze(self,event):
+		keyvals = {}
 		for name,mod in self._modules:
-			keyvals = mod(event)
-			for B,V in keyvals.iteritems():
-				setattr(self.t, B, V)
-				setattr(event,  B, V)
+			#keyvals = mod(event)
+			keyvals.update(mod(event, keyvals))
+		for B,V in keyvals.iteritems():
+			setattr(self.t, B, V)
+			setattr(event,  B, V)
 		self.t.fill()
 
 import os, itertools
@@ -137,8 +142,10 @@ for D in glob(args[0]+"/*"):
 		if options.newOnly:
 			fout = "%s/evVarFriend_%s.root" % (args[1],short)
 			if os.path.exists(fout):
-				f = ROOT.TFile.Open(fname);
-				t = f.Get(treename)
+				#f = ROOT.TFile.Open(fname);
+				#t = f.Get(treename)
+				f = ROOT.TFile.Open(fout);
+				t = f.Get(options.treeDir+'/t')
 				if t.GetEntries() != entries:
 					print "Component %s has to be remade, mismatching number of entries (%d vs %d)" % (short, entries, t.GetEntries())
 					f.Close()

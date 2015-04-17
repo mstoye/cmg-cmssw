@@ -162,7 +162,7 @@ class resolvedTopTagVars1l:
     def listBranches(self):
         return self.branches[:]
     
-    def __call__(self,event):
+    def __call__(self,event,keyvals):
 
         jets = [j for j in Collection(event,"Jet","nJet")]
         #WARNING: This will actually read in all jets, not just the ones passing the 1l selection criteria (currently pt>30 GeV); should revise this
