@@ -60,6 +60,15 @@ class EventVars1L_Top:
 
     def __call__(self,event,base):
 
+        # prepare output
+        ret = {}
+        for name in self.branches:
+            if type(name) == 'tuple':
+                ret[name] = []
+            elif type(name) == 'str':
+                ret[name] = -999.0
+
+
         # get some collections from initial tree
         leps = [l for l in Collection(event,"LepGood","nLepGood")]
         jets = [j for j in Collection(event,"Jet","nJet")]
@@ -100,7 +109,7 @@ class EventVars1L_Top:
             else:
                 NonBJetCMVAMedium30.append(jet)
 
-        #print event.evt, nTightLeps, nBJetCMVAMedium30
+        #print 'here',event.evt, nTightLeps, nBJetCMVAMedium30
 
         ##################################################################
         # The following variables need to be double-checked for validity #
@@ -117,8 +126,8 @@ class EventVars1L_Top:
                     idxMinDPhiBMET = i
 
         # first define output dict 'ret'
-        #ret["idxMinDPhiBMET"] = idxMinDPhiBMET
-        ret = { 'idxMinDPhiBMET' : idxMinDPhiBMET }
+        ret["idxMinDPhiBMET"] = idxMinDPhiBMET
+        #ret = { 'idxMinDPhiBMET' : idxMinDPhiBMET }
         ret["minDPhiBMET"] = minDPhiBMET
 
         # min deltaPhi between a jet (first three jets) and MET; needs to be double-checked
@@ -358,7 +367,7 @@ class EventVars1L_Top:
         for i,j in enumerate(fatjets):
             if j.nSubJets >2 and j.minMass>50 and j.topMass>140 and j.topMass<250:
                 ret['nHighPtTopTag'] += 1
-            if j.tau3/j.tau2 < 0.6:
+            if j.tau3 < 0.6 * j.tau2: # instead of division
                 ret['nHighPtTopTagPlusTau23'] += 1
 
         return ret
