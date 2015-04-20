@@ -28,12 +28,20 @@ class EventVars1L_base:
                           "LSLjetptGT80", "htJet30j", "htJet30ja"
                           ]
 
-
     def listBranches(self):
         return self.branches[:]
 
 
     def __call__(self,event,keyvals):
+
+        # prepare output
+        #ret = dict([(name,-999.0) for name in self.branches])
+        ret = {}
+        for name in self.branches:
+            if type(name) == 'tuple':
+                ret[name] = []
+            elif type(name) == 'str':
+                ret[name] = -999.0
 
         # make python lists as Collection does not support indexing in slices
         genleps = [l for l in Collection(event,"genLep","ngenLep")]
