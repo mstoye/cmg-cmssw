@@ -49,6 +49,7 @@ class EventVars1L_Top:
                           ("TopVarsMTbnuMin","F",10,"nBMinVariantsTopVars"),("TopVarsLepBMassMin","F",10,"nBMinVariantsTopVars"),
                           ("TopVarsMTtopMin","F",10,"nBMinVariantsTopVars"),("TopVarsMtopMin","F",10,"nBMinVariantsTopVars"),
                           ("TopVarsMETovTopMin","F",10,"nBMinVariantsTopVars"),("TopVarsMtopDecorMin","F",10,"nBMinVariantsTopVars"),
+                          ("TopVarsTopPtMin","F",10,"nBMinVariantsTopVars"),("TopVarsTopEtMin","F",10,"nBMinVariantsTopVars"),
                           "MTW","MW1","MW2",
                           "nHighPtTopTag", "nHighPtTopTagPlusTau23"
                           ]
@@ -223,7 +224,7 @@ class EventVars1L_Top:
                 else:
                     MtopDecor.append(ThisMtopDecor1)
 
-		# fill them
+        # fill them
         ret["MTbnu"] =MTbnu
         ret["LepBMass"]=LepBMass
         ret["MTtop"]=MTtop
@@ -243,6 +244,8 @@ class EventVars1L_Top:
         TopVarsMETovTopMin = []
         TopVarsMtopDecorMin = []
 
+        TopVarsTopPtMin = []
+        TopVarsTopEtMin = []
 
         iBTagDict = {i: jets[idx].btagCMVA for i, idx in enumerate(centralJet30idx)}
         sortIdsByBTag = sorted(iBTagDict.items(), key=operator.itemgetter(1), reverse=True)
@@ -261,6 +264,8 @@ class EventVars1L_Top:
             TopVarsMtopMin       .append(minValueForIdxList(Mtop      , [ids[0] for ids in bTaggedJetsSorted]))
             TopVarsMETovTopMin   .append(minValueForIdxList(METovTop  , [ids[0] for ids in bTaggedJetsSorted]))
             TopVarsMtopDecorMin  .append(minValueForIdxList(MtopDecor , [ids[0] for ids in bTaggedJetsSorted]))
+            TopVarsTopPtMin      .append(minValueForIdxList(TopPt     , [ids[0] for ids in bTaggedJetsSorted]))
+            TopVarsTopEtMin      .append(minValueForIdxList(TopEt     , [ids[0] for ids in bTaggedJetsSorted]))
 
             TopVarsMTbnuMin      .append(minValueForIdxList(MTbnu     , [ids[0] for ids in bTaggedJetsPPSorted]))
             TopVarsLepBMassMin   .append(minValueForIdxList(LepBMass  , [ids[0] for ids in bTaggedJetsPPSorted]))
@@ -268,6 +273,8 @@ class EventVars1L_Top:
             TopVarsMtopMin       .append(minValueForIdxList(Mtop      , [ids[0] for ids in bTaggedJetsPPSorted]))
             TopVarsMETovTopMin   .append(minValueForIdxList(METovTop  , [ids[0] for ids in bTaggedJetsPPSorted]))
             TopVarsMtopDecorMin  .append(minValueForIdxList(MtopDecor , [ids[0] for ids in bTaggedJetsPPSorted]))
+            TopVarsTopPtMin      .append(minValueForIdxList(TopPt     , [ids[0] for ids in bTaggedJetsPPSorted]))
+            TopVarsTopEtMin      .append(minValueForIdxList(TopEt     , [ids[0] for ids in bTaggedJetsPPSorted]))
 
             TopVarsMTbnuMin      .append(minValueForIdxList(MTbnu     , [ids[0] for ids in ThreeBestBTags]))
             TopVarsLepBMassMin   .append(minValueForIdxList(LepBMass  , [ids[0] for ids in ThreeBestBTags]))
@@ -275,7 +282,8 @@ class EventVars1L_Top:
             TopVarsMtopMin       .append(minValueForIdxList(Mtop      , [ids[0] for ids in ThreeBestBTags]))
             TopVarsMETovTopMin   .append(minValueForIdxList(METovTop  , [ids[0] for ids in ThreeBestBTags]))
             TopVarsMtopDecorMin  .append(minValueForIdxList(MtopDecor , [ids[0] for ids in ThreeBestBTags]))
-
+            TopVarsTopPtMin      .append(minValueForIdxList(TopPt     , [ids[0] for ids in ThreeBestBTags]))
+            TopVarsTopEtMin      .append(minValueForIdxList(TopEt     , [ids[0] for ids in ThreeBestBTags]))
 
 
             mcMatchIdLep = tightLeps[0].mcMatchId
@@ -293,6 +301,8 @@ class EventVars1L_Top:
                 TopVarsMtopMin       .append(Mtop      [iCorrectJet] if iCorrectJet>-999 else -999)
                 TopVarsMETovTopMin   .append(METovTop  [iCorrectJet] if iCorrectJet>-999 else -999)
                 TopVarsMtopDecorMin  .append(MtopDecor [iCorrectJet] if iCorrectJet>-999 else -999)
+                TopVarsTopPtMin      .append(TopPt     [iCorrectJet] if iCorrectJet>-999 else -999)
+                TopVarsTopEtMin      .append(TopEt     [iCorrectJet] if iCorrectJet>-999 else -999)
 
                 foundCorrectBJetAndIsTagged = iCorrectJet>-999 and correctJetBTagged
 
@@ -302,6 +312,8 @@ class EventVars1L_Top:
                 TopVarsMtopMin       .append(Mtop      [iCorrectJet] if foundCorrectBJetAndIsTagged else -999)
                 TopVarsMETovTopMin   .append(METovTop  [iCorrectJet] if foundCorrectBJetAndIsTagged else -999)
                 TopVarsMtopDecorMin  .append(MtopDecor [iCorrectJet] if foundCorrectBJetAndIsTagged else -999)
+                TopVarsTopPtMin      .append(TopPt     [iCorrectJet] if foundCorrectBJetAndIsTagged else -999)
+                TopVarsTopEtMin      .append(TopEt     [iCorrectJet] if foundCorrectBJetAndIsTagged else -999)
 
 
                 for i,jet in  enumerate(centralJet30): #testing all jets as b-jet in top-reco
@@ -312,6 +324,8 @@ class EventVars1L_Top:
                         TopVarsMtopMin       .append(Mtop     [i] if idxMinDPhiBMET!=-999 else -999)
                         TopVarsMETovTopMin   .append(METovTop [i] if idxMinDPhiBMET!=-999 else -999)
                         TopVarsMtopDecorMin  .append(MtopDecor[i] if idxMinDPhiBMET!=-999 else -999)
+                        TopVarsTopPtMin      .append(TopPt     [i] if idxMinDPhiBMET!=-999 else -999)
+                        TopVarsTopEtMin      .append(TopEt     [i] if idxMinDPhiBMET!=-999 else -999)
 
         else:
             for i in range(6):
@@ -321,6 +335,8 @@ class EventVars1L_Top:
             TopVarsMtopMin       .append(-999)
             TopVarsMETovTopMin   .append(-999)
             TopVarsMtopDecorMin  .append(-999)
+            TopVarsTopPtMin      .append(-999)
+            TopVarsTopEtMin      .append(-999)
 
 
         ret["nBMinVariantsTopVars"]=6
@@ -331,7 +347,8 @@ class EventVars1L_Top:
         ret["TopVarsMtopMin"]     =TopVarsMtopMin
         ret["TopVarsMETovTopMin"] =TopVarsMETovTopMin
         ret["TopVarsMtopDecorMin"]=TopVarsMtopDecorMin
-
+        ret["TopVarsTopPtMin"]    =TopVarsTopPtMin
+        ret["TopVarsTopEtMin"]    =TopVarsTopEtMin
 
         # for FatJets
         ret['nHighPtTopTag']=0
