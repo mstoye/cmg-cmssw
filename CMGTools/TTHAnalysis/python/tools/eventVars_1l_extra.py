@@ -108,11 +108,11 @@ class EventVars1L_extra:
 
         if len(mt2w_values)>0:
             ret["MT2W"]=min(mt2w_values)
-        #else:
-        #    ret["MT2W"]=-999
+        else:
+            ret["MT2W"]=-999
 
         # topness
-        #ret['Topness']=-999
+        ret['Topness']=-999
         if nTightLeps>=1: #topness and mt2w only make sense for
             # does not seem to work for njet =3 ??! # need to edit btag working point in the code...!! did not quickly find a twiki with official phys14 cmva working points
             if (nCentralJet30>=3) and (nBJetCMVAMedium30>=1) :
