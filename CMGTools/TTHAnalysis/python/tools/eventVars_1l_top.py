@@ -58,7 +58,7 @@ class EventVars1L_Top:
     def listBranches(self):
         return self.branches[:]
 
-    def __call__(self,event,base):
+    def __call__(self,event,base = {}):
 
         # prepare output
         ret = {}
@@ -67,7 +67,6 @@ class EventVars1L_Top:
                 ret[name] = []
             elif type(name) == 'str':
                 ret[name] = -999.0
-
 
         # get some collections from initial tree
         leps = [l for l in Collection(event,"LepGood","nLepGood")]
@@ -109,7 +108,7 @@ class EventVars1L_Top:
             else:
                 NonBJetCMVAMedium30.append(jet)
 
-        #print 'here',event.evt, nTightLeps, nBJetCMVAMedium30
+        #print 'here',event.evt, nTightLeps, len(centralJet30), nBJetCMVAMedium30
 
         ##################################################################
         # The following variables need to be double-checked for validity #
@@ -302,7 +301,7 @@ class EventVars1L_Top:
                 for i,jet in  enumerate(centralJet30):
                     if abs(jet.mcFlavour)==5 and jet.mcMatchId==mcMatchIdLep:
                         iCorrectJet=i
-                if jet.btagCMVA>0.732: correctJetBTagged=True
+                        if jet.btagCMVA>0.732: correctJetBTagged=True
 
                 TopVarsMTbnuMin      .append(MTbnu     [iCorrectJet] if iCorrectJet>-999 else -999)
                 TopVarsLepBMassMin   .append(LepBMass  [iCorrectJet] if iCorrectJet>-999 else -999)
@@ -379,9 +378,9 @@ if __name__ == '__main__':
     class Tester(Module):
         def __init__(self, name):
             Module.__init__(self,name,None)
-            self.sf = EventVars1L()
+            self.sf = EventVars1L_top()
         def analyze(self,ev):
             print "\nrun %6d lumi %4d event %d: leps %d" % (ev.run, ev.lumi, ev.evt, ev.nLepGood)
-            print self.sf(ev)
+            print self.sf(ev,{})
     el = EventLoop([ Tester("tester") ])
     el.loop([tree], maxEvents = 50)
