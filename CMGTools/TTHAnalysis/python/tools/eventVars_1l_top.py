@@ -7,18 +7,12 @@ import PhysicsTools.Heppy.loadlibs
 import array
 import operator
 
-ROOT.gInterpreter.GenerateDictionary("vector<TLorentzVector>","TLorentzVector.h;vector") #need this to be able to use topness code
-
-mt2wSNT = ROOT.heppy.mt2w_bisect.mt2w()
-topness = ROOT.Topness.Topness()
-
 def getPhysObjectArray(j): # https://github.com/HephySusySW/Workspace/blob/72X-master/RA4Analysis/python/mt2w.py
     px = j.pt*cos(j.phi )
     py = j.pt*sin(j.phi )
     pz = j.pt*sinh(j.eta )
     E = sqrt(px*px+py*py+pz*pz) #assuming massless particles...
     return array.array('d', [E, px, py,pz])
-
 
 def mt_2(p4one, p4two):
     return sqrt(2*p4one.Pt()*p4two.Pt()*(1-cos(p4one.Phi()-p4two.Phi())))
@@ -50,12 +44,13 @@ class EventVars1L_Top:
                           ("LepBMass","F",50,"nCentralJet30"), ("MTbnu","F",50,"nCentralJet30"),("Mtop","F",50,"nCentralJet30"),
                           ("MTtop","F",50,"nCentralJet30"), ("METovTop","F",50,"nCentralJet30"),("METTopPhi","F",50,"nCentralJet30"),
                           ("MtopDecor","F",50,"nCentralJet30"),
+                          ("TopPt","F",50,"nCentralJet30"),("TopEt","F",50,"nCentralJet30"),
                           ("nBMinVariantsTopVars","I"),
                           ("TopVarsMTbnuMin","F",10,"nBMinVariantsTopVars"),("TopVarsLepBMassMin","F",10,"nBMinVariantsTopVars"),
                           ("TopVarsMTtopMin","F",10,"nBMinVariantsTopVars"),("TopVarsMtopMin","F",10,"nBMinVariantsTopVars"),
                           ("TopVarsMETovTopMin","F",10,"nBMinVariantsTopVars"),("TopVarsMtopDecorMin","F",10,"nBMinVariantsTopVars"),
+                          ("TopVarsTopPtMin","F",10,"nBMinVariantsTopVars"),("TopVarsTopEtMin","F",10,"nBMinVariantsTopVars"),
                           "MTW","MW1","MW2",
-                          "MT2W", "Topness",
                           "nHighPtTopTag", "nHighPtTopTagPlusTau23"
                           ]
 
@@ -64,6 +59,15 @@ class EventVars1L_Top:
         return self.branches[:]
 
     def __call__(self,event,base):
+
+        # prepare output
+        ret = {}
+        for name in self.branches:
+            if type(name) == 'tuple':
+                ret[name] = []
+            elif type(name) == 'str':
+                ret[name] = -999.0
+
 
         # get some collections from initial tree
         leps = [l for l in Collection(event,"LepGood","nLepGood")]
@@ -105,7 +109,7 @@ class EventVars1L_Top:
             else:
                 NonBJetCMVAMedium30.append(jet)
 
-        #print event.evt, nTightLeps, nBJetCMVAMedium30
+        #print 'here',event.evt, nTightLeps, nBJetCMVAMedium30
 
         ##################################################################
         # The following variables need to be double-checked for validity #
@@ -122,8 +126,8 @@ class EventVars1L_Top:
                     idxMinDPhiBMET = i
 
         # first define output dict 'ret'
-        #ret["idxMinDPhiBMET"] = idxMinDPhiBMET
-        ret = { 'idxMinDPhiBMET' : idxMinDPhiBMET }
+        ret["idxMinDPhiBMET"] = idxMinDPhiBMET
+        #ret = { 'idxMinDPhiBMET' : idxMinDPhiBMET }
         ret["minDPhiBMET"] = minDPhiBMET
 
         # min deltaPhi between a jet (first three jets) and MET; needs to be double-checked
@@ -184,27 +188,52 @@ class EventVars1L_Top:
         METTopPhi = []
         MtopDecor = []
 
+        TopEt = []
+        TopPt = []
+
         if(nTightLeps==1) :
             for i,jet in  enumerate(centralJet30): #testing all jets as b-jet in top-reco
                 ThisMTnub = sqrt(2*event.met_pt*jet.pt* (1-cos( metp4.DeltaPhi(jet.p4() ))))
                 MTbnu.append(ThisMTnub)
-                ThislepBMass = (tightLeps[0].p4()+jet.p4()).M()
+
+                # lep + jet vector
+                lepJp4 = tightLeps[0].p4()+jet.p4()
+
+                ThislepBMass = lepJp4.M()
                 LepBMass.append(ThislepBMass )
+
+                # top vector: MET + lep + jet
+                topP4 = metp4+lepJp4
+                TopEt.append(topP4.Et())
+                TopPt.append(topP4.Pt())
+
                 ThisMTtop =  sqrt( 81.*81. + ThislepBMass *ThislepBMass + ThisMTnub*ThisMTnub)
                 MTtop.append(ThisMTtop)
-                ThisMetovTop =  event.met_pt/(metp4+tightLeps[0].p4()+jet.p4()).Pt()
+
+                ThisMetovTop =  event.met_pt/ topP4.Pt()
                 METovTop.append(ThisMetovTop)
-                ThisMetTop = metp4.DeltaPhi(metp4+tightLeps[0].p4()+jet.p4())
+
+                ThisMetTop = metp4.DeltaPhi(metp4+lepJp4)
                 METTopPhi.append(ThisMetTop)
-                ThisMtop = (neutrino1+tightLeps[0].p4()+jet.p4()).M()
-                if(ThisMtop>(neutrino2+tightLeps[0].p4()+jet.p4()).M()): ThisMtop = (neutrino2+tightLeps[0].p4()+jet.p4()).M() #take smaller mtop of the two nu pz-solutions
-                Mtop.append(ThisMtop)
-                ThisMtopDecor  = sqrt((tightLeps[0].p4()+jet.p4()).M()*(tightLeps[0].p4()+jet.p4()).M()+ (neutrino1+jet.p4()).M()*(neutrino1+jet.p4()).M()+81*81)
-                if ThisMtopDecor > sqrt((tightLeps[0].p4()+jet.p4()).M()*(tightLeps[0].p4()+jet.p4()).M()+ (neutrino2+jet.p4()).M()*(neutrino2+jet.p4()).M()+81*81):
-                    ThisMtopDecor =  sqrt((tightLeps[0].p4()+jet.p4()).M()*(tightLeps[0].p4()+jet.p4()).M()+ (neutrino2+jet.p4()).M()*(neutrino2+jet.p4()).M()+81*81)
-                MtopDecor.append(ThisMtopDecor)
 
+                TopMass1 = (neutrino1+lepJp4).M()
+                TopMass2 = (neutrino2+lepJp4).M()
 
+                #take smaller mtop of the two nu pz-solutions
+                if TopMass1 > TopMass2:
+                    Mtop.append(TopMass2)
+                else:
+                    Mtop.append(TopMass1)
+
+                ThisMtopDecor1  = sqrt(lepJp4.M()*lepJp4.M()+ (neutrino1+jet.p4()).M()*(neutrino1+jet.p4()).M()+81*81)
+                ThisMtopDecor2  = sqrt(lepJp4.M()*lepJp4.M()+ (neutrino2+jet.p4()).M()*(neutrino2+jet.p4()).M()+81*81)
+
+                if ThisMtopDecor1 > ThisMtopDecor2:
+                    MtopDecor.append(ThisMtopDecor2)
+                else:
+                    MtopDecor.append(ThisMtopDecor1)
+
+        # fill them
         ret["MTbnu"] =MTbnu
         ret["LepBMass"]=LepBMass
         ret["MTtop"]=MTtop
@@ -212,6 +241,9 @@ class EventVars1L_Top:
         ret["METovTop"]=METovTop
         ret["METTopPhi"]=METTopPhi
         ret["MtopDecor"]=MtopDecor
+
+        ret['TopPt'] = TopPt
+        ret['TopEt'] = TopEt
 
         #        TopVarsJetIdx = []
         TopVarsMTbnuMin = []
@@ -221,6 +253,8 @@ class EventVars1L_Top:
         TopVarsMETovTopMin = []
         TopVarsMtopDecorMin = []
 
+        TopVarsTopPtMin = []
+        TopVarsTopEtMin = []
 
         iBTagDict = {i: jets[idx].btagCMVA for i, idx in enumerate(centralJet30idx)}
         sortIdsByBTag = sorted(iBTagDict.items(), key=operator.itemgetter(1), reverse=True)
@@ -239,6 +273,8 @@ class EventVars1L_Top:
             TopVarsMtopMin       .append(minValueForIdxList(Mtop      , [ids[0] for ids in bTaggedJetsSorted]))
             TopVarsMETovTopMin   .append(minValueForIdxList(METovTop  , [ids[0] for ids in bTaggedJetsSorted]))
             TopVarsMtopDecorMin  .append(minValueForIdxList(MtopDecor , [ids[0] for ids in bTaggedJetsSorted]))
+            TopVarsTopPtMin      .append(minValueForIdxList(TopPt     , [ids[0] for ids in bTaggedJetsSorted]))
+            TopVarsTopEtMin      .append(minValueForIdxList(TopEt     , [ids[0] for ids in bTaggedJetsSorted]))
 
             TopVarsMTbnuMin      .append(minValueForIdxList(MTbnu     , [ids[0] for ids in bTaggedJetsPPSorted]))
             TopVarsLepBMassMin   .append(minValueForIdxList(LepBMass  , [ids[0] for ids in bTaggedJetsPPSorted]))
@@ -246,6 +282,8 @@ class EventVars1L_Top:
             TopVarsMtopMin       .append(minValueForIdxList(Mtop      , [ids[0] for ids in bTaggedJetsPPSorted]))
             TopVarsMETovTopMin   .append(minValueForIdxList(METovTop  , [ids[0] for ids in bTaggedJetsPPSorted]))
             TopVarsMtopDecorMin  .append(minValueForIdxList(MtopDecor , [ids[0] for ids in bTaggedJetsPPSorted]))
+            TopVarsTopPtMin      .append(minValueForIdxList(TopPt     , [ids[0] for ids in bTaggedJetsPPSorted]))
+            TopVarsTopEtMin      .append(minValueForIdxList(TopEt     , [ids[0] for ids in bTaggedJetsPPSorted]))
 
             TopVarsMTbnuMin      .append(minValueForIdxList(MTbnu     , [ids[0] for ids in ThreeBestBTags]))
             TopVarsLepBMassMin   .append(minValueForIdxList(LepBMass  , [ids[0] for ids in ThreeBestBTags]))
@@ -253,7 +291,8 @@ class EventVars1L_Top:
             TopVarsMtopMin       .append(minValueForIdxList(Mtop      , [ids[0] for ids in ThreeBestBTags]))
             TopVarsMETovTopMin   .append(minValueForIdxList(METovTop  , [ids[0] for ids in ThreeBestBTags]))
             TopVarsMtopDecorMin  .append(minValueForIdxList(MtopDecor , [ids[0] for ids in ThreeBestBTags]))
-
+            TopVarsTopPtMin      .append(minValueForIdxList(TopPt     , [ids[0] for ids in ThreeBestBTags]))
+            TopVarsTopEtMin      .append(minValueForIdxList(TopEt     , [ids[0] for ids in ThreeBestBTags]))
 
 
             mcMatchIdLep = tightLeps[0].mcMatchId
@@ -271,6 +310,8 @@ class EventVars1L_Top:
                 TopVarsMtopMin       .append(Mtop      [iCorrectJet] if iCorrectJet>-999 else -999)
                 TopVarsMETovTopMin   .append(METovTop  [iCorrectJet] if iCorrectJet>-999 else -999)
                 TopVarsMtopDecorMin  .append(MtopDecor [iCorrectJet] if iCorrectJet>-999 else -999)
+                TopVarsTopPtMin      .append(TopPt     [iCorrectJet] if iCorrectJet>-999 else -999)
+                TopVarsTopEtMin      .append(TopEt     [iCorrectJet] if iCorrectJet>-999 else -999)
 
                 foundCorrectBJetAndIsTagged = iCorrectJet>-999 and correctJetBTagged
 
@@ -280,6 +321,8 @@ class EventVars1L_Top:
                 TopVarsMtopMin       .append(Mtop      [iCorrectJet] if foundCorrectBJetAndIsTagged else -999)
                 TopVarsMETovTopMin   .append(METovTop  [iCorrectJet] if foundCorrectBJetAndIsTagged else -999)
                 TopVarsMtopDecorMin  .append(MtopDecor [iCorrectJet] if foundCorrectBJetAndIsTagged else -999)
+                TopVarsTopPtMin      .append(TopPt     [iCorrectJet] if foundCorrectBJetAndIsTagged else -999)
+                TopVarsTopEtMin      .append(TopEt     [iCorrectJet] if foundCorrectBJetAndIsTagged else -999)
 
 
                 for i,jet in  enumerate(centralJet30): #testing all jets as b-jet in top-reco
@@ -290,6 +333,8 @@ class EventVars1L_Top:
                         TopVarsMtopMin       .append(Mtop     [i] if idxMinDPhiBMET!=-999 else -999)
                         TopVarsMETovTopMin   .append(METovTop [i] if idxMinDPhiBMET!=-999 else -999)
                         TopVarsMtopDecorMin  .append(MtopDecor[i] if idxMinDPhiBMET!=-999 else -999)
+                        TopVarsTopPtMin      .append(TopPt     [i] if idxMinDPhiBMET!=-999 else -999)
+                        TopVarsTopEtMin      .append(TopEt     [i] if idxMinDPhiBMET!=-999 else -999)
 
         else:
             for i in range(6):
@@ -299,6 +344,8 @@ class EventVars1L_Top:
             TopVarsMtopMin       .append(-999)
             TopVarsMETovTopMin   .append(-999)
             TopVarsMtopDecorMin  .append(-999)
+            TopVarsTopPtMin      .append(-999)
+            TopVarsTopEtMin      .append(-999)
 
 
         ret["nBMinVariantsTopVars"]=6
@@ -309,78 +356,18 @@ class EventVars1L_Top:
         ret["TopVarsMtopMin"]     =TopVarsMtopMin
         ret["TopVarsMETovTopMin"] =TopVarsMETovTopMin
         ret["TopVarsMtopDecorMin"]=TopVarsMtopDecorMin
+        ret["TopVarsTopPtMin"]    =TopVarsTopPtMin
+        ret["TopVarsTopEtMin"]    =TopVarsTopEtMin
 
-
-        #add topness and mt2W-variable (timing issue with topness: slows down the friend tree production by a factor of ~3)
-        mt2w_values=[]
-
-        if nTightLeps>=1: #topness and mt2w only make sense for
-            lep = getPhysObjectArray(tightLeps[0])
-            if nBJetCMVAMedium30==0 and nCentralJet30>=3: #All combinations from the highest three light (or b-) jets
-                consideredJets = [ getPhysObjectArray(jet) for jet in NonBJetCMVAMedium30[:3] ] # only throw arrays into the permutation business
-                ftPerms = itertools.permutations(consideredJets, 2)
-                for perm in ftPerms:
-                    mt2wSNT.set_momenta(lep, perm[0], perm[1], pmiss)
-                    mt2w_values.append(mt2wSNT.get_mt2w())
-            elif nBJetCMVAMedium30==1 and nCentralJet30>=2: #All combinations from one b and the highest two light jets
-                consideredJets = [ getPhysObjectArray(jet) for jet in NonBJetCMVAMedium30[:2] ] # only throw arrays into the permutation business
-                consideredJets.append(getPhysObjectArray(BJetCMVAMedium30[0]))
-                ftPerms = itertools.permutations(consideredJets, 2)
-                for perm in ftPerms:
-                    mt2wSNT.set_momenta(lep, perm[0], perm[1], pmiss)
-                    mt2w_values.append(mt2wSNT.get_mt2w())
-            elif nBJetCMVAMedium30==2:
-                consideredJets = [ getPhysObjectArray(jet) for jet in BJetCMVAMedium30[:2] ] # only throw arrays into the permutation business
-                ftPerms = itertools.permutations(consideredJets, 2)
-                for perm in ftPerms:
-                    mt2wSNT.set_momenta(lep, perm[0], perm[1], pmiss)
-                    mt2w_values.append(mt2wSNT.get_mt2w())
-            elif nBJetCMVAMedium30>=3: #All combinations from the highest three b jets
-                consideredJets = [ getPhysObjectArray(jet) for jet in BJetCMVAMedium30[:3] ] # only throw arrays into the permutation business
-                ftPerms = itertools.permutations(consideredJets, 2)
-                for perm in ftPerms:
-                    mt2wSNT.set_momenta(lep, perm[0], perm[1], pmiss)
-                    mt2w_values.append(mt2wSNT.get_mt2w())
-
-        if len(mt2w_values)>0:
-            ret["MT2W"]=min(mt2w_values)
-        else:
-            ret["MT2W"]=-999
-
-        # topness
-        ret['Topness']=-999
-        if nTightLeps>=1: #topness and mt2w only make sense for
-            # does not seem to work for njet =3 ??! # need to edit btag working point in the code...!! did not quickly find a twiki with official phys14 cmva working points
-            if (nCentralJet30>=3) and (nBJetCMVAMedium30>=1) :
-
-                p4_jets = std.vector(TLorentzVector)();
-                bdisc_jets = std.vector('float')();
-
-                for jet in centralJet30:
-                    jetTLorentz = ROOT.TLorentzVector(0,0,0,0)
-                    jetTLorentz.SetPtEtaPhiM(jet.pt, jet.eta, jet.phi, jet.mass)
-                    p4_jets.push_back(jetTLorentz)
-                    bdisc_jets.push_back(jet.btagCMVA)
-
-                lepTLorentz = ROOT.TLorentzVector(0,0,0,0)
-                lepTLorentz.SetPtEtaPhiM(tightLeps[0].pt, tightLeps[0].eta, tightLeps[0].phi, tightLeps[0].mass)
-
-                # calc topness
-                tempTopness = topness.GetTopness(p4_jets,bdisc_jets,lepTLorentz,metp4) #this is really slow!
-                if tempTopness <=0:
-                    print tempTopness, "this will fail"
-                else:
-                    ret['Topness'] = log(tempTopness) #this is really slow!
-
+        # for FatJets
         ret['nHighPtTopTag']=0
         ret['nHighPtTopTagPlusTau23']=0
 
-        # FatJets:
         fatjets = [j for j in Collection(event,"FatJet","nFatJet")]
         for i,j in enumerate(fatjets):
             if j.nSubJets >2 and j.minMass>50 and j.topMass>140 and j.topMass<250:
                 ret['nHighPtTopTag'] += 1
-            if j.tau3/j.tau2 < 0.6:
+            if j.tau3 < 0.6 * j.tau2: # instead of division
                 ret['nHighPtTopTagPlusTau23'] += 1
 
         return ret
