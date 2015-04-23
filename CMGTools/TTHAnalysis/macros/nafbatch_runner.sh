@@ -3,16 +3,12 @@
 #$ -S /bin/zsh
 #######################################################
 ## Black list nodes
-#$ -l h=!bird234.desy.de
-#$ -l h=!bird238.desy.de
-#$ -l h=!bird242.desy.de
-#$ -l h=!bird244.desy.de
-#$ -l h=!bird246.desy.de
+##$ -l h=!bird234.desy.de
 #######################################################
 ## the cpu time for this job
 #$ -l h_rt=02:59:00
 ## the maximum memory usage of this job
-#$ -l h_vmem=1900M
+#$ -l h_vmem=3900M
 ## operating system
 #$ -l distro=sld6
 ## architecture
