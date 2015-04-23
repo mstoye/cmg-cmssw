@@ -10,7 +10,25 @@ import operator
 ROOT.gInterpreter.GenerateDictionary("vector<TLorentzVector>","TLorentzVector.h;vector") #need this to be able to use topness code
 
 mt2wSNT = ROOT.heppy.mt2w_bisect.mt2w()
+
+## TOPNESS SETUP ##
 topness = ROOT.Topness.Topness()
+
+## B tag Working points
+## For Topness only Tight is used
+
+## CSV (v1) WPs
+#topness.bDisc_LooseWP = 0.244
+#topness.bDisc_TightWP = 0.679
+
+## CMVA
+#topness.bDisc_LooseWP = 0.244
+#topness.bDisc_TightWP = 0.762
+
+## CSV v2 (CSV-IVF)
+topness.bDisc_LooseWP = 0.423
+topness.bDisc_TightWP = 0.814 # CSVv2 Medium WP
+#topness.bDisc_TightWP = 0.941 # CSVv2 Tight WP
 
 def getPhysObjectArray(j): # https://github.com/HephySusySW/Workspace/blob/72X-master/RA4Analysis/python/mt2w.py
     px = j.pt*cos(j.phi )
