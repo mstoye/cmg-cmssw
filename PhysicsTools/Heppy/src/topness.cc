@@ -105,13 +105,20 @@ Topness::Topness::Topness(){
     sigmaW=5.;
     sigmas=1000;
 
+    // Default discriminator values (can be modified directly)
+
     //CSV 8 TeV
     //  bDisc_TightWP = 0.679;
     //  bDisc_LooseWP = 0.244;
 
-    //  CMVA 13 TeV
-    bDisc_TightWP = 0.762;
-    bDisc_LooseWP = 0.244; //not known, actually...
+    //CMVA 13 TeV
+    //   bDisc_TightWP = 0.762;
+    //   bDisc_LooseWP = 0.244; //not known, actually...
+
+    //CSV v2 (CSV-IVF)
+    bDisc_TightWP = 0.941;
+    bDisc_LooseWP = 0.423;
+    //bDisc_MediumWP = 0.814; // isn't used
 
     del=20.;
     lMAX=10;
