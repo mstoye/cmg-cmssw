@@ -51,8 +51,7 @@ class EventVars1L_Top:
                           ("TopVarsMETovTopMin","F",10,"nBMinVariantsTopVars"),("TopVarsMtopDecorMin","F",10,"nBMinVariantsTopVars"),
                           ("TopVarsTopPtMin","F",10,"nBMinVariantsTopVars"),("TopVarsTopEtMin","F",10,"nBMinVariantsTopVars"),
                           "MTW","MW1","MW2",
-                          'minDphiLepB','minDphiLepBidx',
-                          "nHighPtTopTag", "nHighPtTopTagPlusTau23"
+                          'minDphiLepB','minDphiLepBidx'
                           ]
 
 
@@ -391,17 +390,6 @@ class EventVars1L_Top:
         ret["TopVarsMtopDecorMin"]=TopVarsMtopDecorMin
         ret["TopVarsTopPtMin"]    =TopVarsTopPtMin
         ret["TopVarsTopEtMin"]    =TopVarsTopEtMin
-
-        # for FatJets
-        ret['nHighPtTopTag']=0
-        ret['nHighPtTopTagPlusTau23']=0
-
-        fatjets = [j for j in Collection(event,"FatJet","nFatJet")]
-        for i,j in enumerate(fatjets):
-            if j.nSubJets >2 and j.minMass>50 and j.topMass>140 and j.topMass<250:
-                ret['nHighPtTopTag'] += 1
-                if j.tau3 < 0.6 * j.tau2: # instead of division
-                    ret['nHighPtTopTagPlusTau23'] += 1
 
         return ret
 

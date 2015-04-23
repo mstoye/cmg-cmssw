@@ -25,7 +25,8 @@ class EventVars1L_base:
                           ("nCentralJet30","I"),("centralJet30idx","I",100,"nCentralJet30"),("centralJet30_DescFlag","F",100,"nCentralJet30"),
                           ("nBJetMedium30","I"),("BJetMedium30idx","I",50,"nBJetMedium30"),
                           "nGoodBJets_allJets", "nGoodBJets",
-                          "LSLjetptGT80", "htJet30j", "htJet30ja"
+                          "LSLjetptGT80", "htJet30j", "htJet30ja",
+                          "nHighPtTopTag", "nHighPtTopTagPlusTau23"
                           ]
 
     def listBranches(self):
@@ -359,6 +360,17 @@ class EventVars1L_base:
 
         ret["centralJet30_DescFlag"]=centralJet30_DescFlag
         ret["tightLeps_DescFlag"]=tightLeps_DescFlag
+
+        # for FatJets
+        ret['nHighPtTopTag']=0
+        ret['nHighPtTopTagPlusTau23']=0
+
+        fatjets = [j for j in Collection(event,"FatJet","nFatJet")]
+        for i,j in enumerate(fatjets):
+            if j.nSubJets >2 and j.minMass>50 and j.topMass>140 and j.topMass<250:
+                ret['nHighPtTopTag'] += 1
+                if j.tau3 < 0.6 * j.tau2: # instead of division
+                    ret['nHighPtTopTagPlusTau23'] += 1
 
         return ret
 
