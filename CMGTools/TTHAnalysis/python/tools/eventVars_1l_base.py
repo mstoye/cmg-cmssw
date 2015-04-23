@@ -23,7 +23,7 @@ class EventVars1L_base:
                           ("nTightMu","I"),("tightMuIdx","I",10,"nTightMu"),("nVetoMu","I"),("vetoMuIdx","I",10,"nVetoMu"),
                           'HT','ST','LepGood1_pt','LepGood1_pdgId','LepGood1_eta',
                           ("nCentralJet30","I"),("centralJet30idx","I",100,"nCentralJet30"),("centralJet30_DescFlag","F",100,"nCentralJet30"),
-                          ("nBJetCMVAMedium30","I"),("BJetCMVAMedium30idx","I",50,"nBJetCMVAMedium30"),
+                          ("nBJetMedium30","I"),("BJetMedium30idx","I",50,"nBJetMedium30"),
                           "nGoodBJets_allJets", "nGoodBJets",
                           "LSLjetptGT80", "htJet30j", "htJet30ja"
                           ]
@@ -300,20 +300,26 @@ class EventVars1L_base:
 
         ret['HT'] = ret['htJet30j']
 
-        BJetCMVAMedium30 = []
-        BJetCMVAMedium30idx = []
-        NonBJetCMVAMedium30 = []
-        for i,j in enumerate(centralJet30):
-            if j.btagCMVA>0.732:
-                BJetCMVAMedium30.append(j)
-                BJetCMVAMedium30idx.append(centralJet30idx[i])
-            else:
-                NonBJetCMVAMedium30.append(j)
-        ret['nBJetCMVAMedium30']    = len(BJetCMVAMedium30)
-        ret['BJetCMVAMedium30idx']  = BJetCMVAMedium30idx
+        ## B tagging WPs for CSVv2 (CSV-IVF)
+        ## L: 0.423, M: 0.814, T: 0.941
+        ## from: https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideBTagging#Preliminary_working_or_operating
 
-        ret['nGoodBJets']    = sum([j.btagCMVA>0.732 for j in centralJet30])
-        ret['nGoodBJets_allJets']    = sum([j.btagCMVA>0.732 and j.pt>30 and abs(j.eta)<centralEta for j in jets]) # where is the working point defined?
+        bTagWP = 0.814 # MediumWP for CSVv2
+        #bTagWP = 0.732 # MediumWP for CMVA
+
+        BJetMedium30 = []
+        BJetMedium30idx = []
+
+        for i,j in enumerate(centralJet30):
+            if j.btagCSV>bTagWP:
+                BJetMedium30.append(j)
+                BJetMedium30idx.append(centralJet30idx[i])
+
+        ret['nBJetMedium30']    = len(BJetMedium30)
+        ret['BJetMedium30idx']  = BJetMedium30idx
+
+        ret['nGoodBJets']    = sum([j.btagCSV > bTagWP for j in centralJet30])
+        ret['nGoodBJets_allJets']    = sum([j.btagCSV > bTagWP and j.pt>30 and abs(j.eta)<centralEta for j in jets])
 
         #plain copy of MET pt (just as an example and cross-check for proper friend tree production)
         ret["MET"] = metp4.Pt()

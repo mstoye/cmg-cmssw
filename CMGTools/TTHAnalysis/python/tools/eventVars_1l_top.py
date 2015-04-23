@@ -98,28 +98,35 @@ class EventVars1L_Top:
         nCentralJet30 = len(centralJet30)
 
         # B jets
-        BJetCMVAMedium30 = []
-        BJetCMVAMedium30idx = base['BJetCMVAMedium30idx']
-        NonBJetCMVAMedium30 = []
-        nBJetCMVAMedium30 = base['nBJetCMVAMedium30']
+        BJetMedium30 = []
+        BJetMedium30idx = base['BJetMedium30idx']
+        NonBJetMedium30 = []
+        nBJetMedium30 = base['nBJetMedium30']
 
         for idx,jet in enumerate(centralJet30):
-            if idx in BJetCMVAMedium30idx:
-                BJetCMVAMedium30.append(jet)
+            if idx in BJetMedium30idx:
+                BJetMedium30.append(jet)
             else:
-                NonBJetCMVAMedium30.append(jet)
+                NonBJetMedium30.append(jet)
 
-        #print 'here',event.evt, nTightLeps, len(centralJet30), nBJetCMVAMedium30
+        #print 'here',event.evt, nTightLeps, len(centralJet30), nBJetMedium30
 
         ##################################################################
         # The following variables need to be double-checked for validity #
         ##################################################################
 
-        # min deltaPhi between a (CMVA) b-jet and MET; needs to be double-checked
+        ## B tagging WPs for CSVv2 (CSV-IVF)
+        ## L: 0.423, M: 0.814, T: 0.941
+        ## from: https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideBTagging#Preliminary_working_or_operating
+
+        bTagWP = 0.814 # MediumWP for CSVv2
+        #bTagWP = 0.732 # MediumWP for CMVA
+
+        # min deltaPhi between a b-jet and MET; needs to be double-checked
         minDPhiBMET    = 100
         idxMinDPhiBMET = -999
         for i, jet in enumerate(jets):
-            if jet.btagCMVA>0.732:
+            if jet.btagCSV>bTagWP:
                 dPhiBMET = abs(jet.p4().DeltaPhi(metp4))
                 if dPhiBMET<minDPhiBMET:
                     minDPhiBMET=dPhiBMET
@@ -252,7 +259,7 @@ class EventVars1L_Top:
 
         if nTightLeps == 1:
             for i, jet in enumerate(centralJet30):
-                if i in BJetCMVAMedium30idx:
+                if i in BJetMedium30idx:
                     dPhiLepB = abs(jet.p4().DeltaPhi(tightLeps[0].p4()))
                     if dPhiLepB < minDphiLepB:
                         minDphiLepB = dPhiLepB
@@ -272,11 +279,11 @@ class EventVars1L_Top:
         TopVarsTopPtMin = []
         TopVarsTopEtMin = []
 
-        iBTagDict = {i: jets[idx].btagCMVA for i, idx in enumerate(centralJet30idx)}
+        iBTagDict = {i: jets[idx].btagCSV for i, idx in enumerate(centralJet30idx)}
         sortIdsByBTag = sorted(iBTagDict.items(), key=operator.itemgetter(1), reverse=True)
-        bTaggedJetsSorted = sortIdsByBTag[:nBJetCMVAMedium30]
+        bTaggedJetsSorted = sortIdsByBTag[:nBJetMedium30]
         #        print bTaggedJetsSorted
-        bTaggedJetsPPSorted = sortIdsByBTag[:nBJetCMVAMedium30+1]
+        bTaggedJetsPPSorted = sortIdsByBTag[:nBJetMedium30+1]
         #        print bTaggedJetsPPSorted
         ThreeBestBTags = sortIdsByBTag[:3]
         #        print ThreeBestBTags
@@ -328,7 +335,7 @@ class EventVars1L_Top:
                 for i,jet in  enumerate(centralJet30):
                     if abs(jet.mcFlavour)==5 and jet.mcMatchId==mcMatchIdLep:
                         iCorrectJet=i
-                        if jet.btagCMVA>0.732: correctJetBTagged=True
+                        if jet.btagCSV>bTagWP: correctJetBTagged=True
 
             TopVarsMTbnuMin      .append(MTbnu     [iCorrectJet] if iCorrectJet>-999 else -999)
             TopVarsLepBMassMin   .append(LepBMass  [iCorrectJet] if iCorrectJet>-999 else -999)
