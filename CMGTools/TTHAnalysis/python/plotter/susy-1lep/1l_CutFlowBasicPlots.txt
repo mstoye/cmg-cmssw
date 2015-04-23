@@ -6,8 +6,8 @@ hSTLogY:     LepGood_pt[tightLepsIdx[0]] + met_pt  : 40,0,1599.9999;  XTitle="S_
 hST:         LepGood_pt[tightLepsIdx[0]] + met_pt  : 40,0,1599.9999;  XTitle="S_{T} [GeV]"
 hnJetLogY:       nCentralJet30                            : 20,0,20   ;  XTitle="jet multiplicity", Logy
 hnJet:       nCentralJet30                            : 20,0,20   ;  XTitle="jet multiplicity"
-hnBJetLogY:      nBJetCMVAMedium30                          : 10,0,10   ;  XTitle="b-jet multiplicity (CMVAMed)", Logy
-hnBJet:      nBJetCMVAMedium30                          : 10,0,10   ;  XTitle="b-jet multiplicity (CMVAMed)"
+hnBJetLogY:      nBJetMedium30                          : 10,0,10   ;  XTitle="b-jet multiplicity (Med)", Logy
+hnBJet:      nBJetMedium30                          : 10,0,10   ;  XTitle="b-jet multiplicity (Med)"
 hdPhiLepWLogy:   fabs(DeltaPhiLepW)                        : 20,0,3.141   ; XTitle="#Delta #varphi (lep\,W)", IncludeOverflows=False, Logy
 hdPhiLepW:   fabs(DeltaPhiLepW)                        : 20,0,3.141   ; XTitle="#Delta #varphi (lep\,W)", IncludeOverflows=False 
 Topness:   Topness              : 15,-10,20; XTitle="Topness"
