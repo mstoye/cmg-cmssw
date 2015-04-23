@@ -131,28 +131,28 @@ class EventVars1L_extra:
 
         # topness
         ret['Topness']=-999
-		#topness makes sense for
+        #topness makes sense for
         if (nTightLeps>=1) and (nCentralJet30>=3) and (nBJetMedium30>=1) :
 
-			p4_jets = std.vector(TLorentzVector)();
-			bdisc_jets = std.vector('float')();
+            p4_jets = std.vector(TLorentzVector)();
+            bdisc_jets = std.vector('float')();
 
-			for jet in centralJet30:
-				jetTLorentz = ROOT.TLorentzVector(0,0,0,0)
-				jetTLorentz.SetPtEtaPhiM(jet.pt, jet.eta, jet.phi, jet.mass)
-				p4_jets.push_back(jetTLorentz)
-				# select B tag discriminator for topness (WP see above)
-				bdisc_jets.push_back(jet.btagCSV)
+            for jet in centralJet30:
+                jetTLorentz = ROOT.TLorentzVector(0,0,0,0)
+                jetTLorentz.SetPtEtaPhiM(jet.pt, jet.eta, jet.phi, jet.mass)
+                p4_jets.push_back(jetTLorentz)
+                # select B tag discriminator for topness (WP see above)
+                bdisc_jets.push_back(jet.btagCSV)
 
-			lepTLorentz = ROOT.TLorentzVector(0,0,0,0)
-			lepTLorentz.SetPtEtaPhiM(tightLeps[0].pt, tightLeps[0].eta, tightLeps[0].phi, tightLeps[0].mass)
+            lepTLorentz = ROOT.TLorentzVector(0,0,0,0)
+            lepTLorentz.SetPtEtaPhiM(tightLeps[0].pt, tightLeps[0].eta, tightLeps[0].phi, tightLeps[0].mass)
 
-			# calc topness
-			tempTopness = topness.GetTopness(p4_jets,bdisc_jets,lepTLorentz,metp4) #this is really slow!
-			if tempTopness <=0:
-				print tempTopness, "this will fail"
-			else:
-				ret['Topness'] = log(tempTopness) #this is really slow!
+            # calc topness
+            tempTopness = topness.GetTopness(p4_jets,bdisc_jets,lepTLorentz,metp4) #this is really slow!
+            if tempTopness <=0:
+                print tempTopness, "this will fail"
+            else:
+                ret['Topness'] = log(tempTopness) #this is really slow!
 
         # return branches
         return ret

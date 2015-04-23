@@ -99,14 +99,13 @@ class EventVars1L_Top:
         # B jets
         BJetMedium30 = []
         BJetMedium30idx = base['BJetMedium30idx']
-        NonBJetMedium30 = []
         nBJetMedium30 = base['nBJetMedium30']
 
+        '''
         for idx,jet in enumerate(centralJet30):
-            if idx in BJetMedium30idx:
-                BJetMedium30.append(jet)
-            else:
-                NonBJetMedium30.append(jet)
+        if idx in BJetMedium30idx:
+        BJetMedium30.append(jet)
+        '''
 
         #print 'here',event.evt, nTightLeps, len(centralJet30), nBJetMedium30
 
@@ -124,7 +123,7 @@ class EventVars1L_Top:
         # min deltaPhi between a b-jet and MET; needs to be double-checked
         minDPhiBMET    = 100
         idxMinDPhiBMET = -999
-        for i, jet in enumerate(jets):
+        for i, jet in enumerate(centralJet30):
             if jet.btagCSV>bTagWP:
                 dPhiBMET = abs(jet.p4().DeltaPhi(metp4))
                 if dPhiBMET<minDPhiBMET:
@@ -138,7 +137,7 @@ class EventVars1L_Top:
 
         # min deltaPhi between a jet (first three jets) and MET; needs to be double-checked
         minDPhiJMET    = 100
-        for i, jet in enumerate(jets[:3]):
+        for i, jet in enumerate(centralJet30[:3]):
             dPhiJMET = abs(jet.p4().DeltaPhi(metp4))
             if dPhiJMET<minDPhiJMET:
                 minDPhiJMET=dPhiJMET
@@ -153,9 +152,9 @@ class EventVars1L_Top:
         if(idxMinDPhiBMET>=0):
             SumMetClosestBJet = jets[idxMinDPhiBMET].p4() + metp4
             ret["mTClBPlusMET"] = SumMetClosestBJet.Mt()
-            mTBJetMET = mt_2(jets[idxMinDPhiBMET].p4(),metp4)
+            mTBJetMET = mt_2(centralJet30[idxMinDPhiBMET].p4(),metp4)
             if nTightLeps>=1:
-                mLepBJet = (jets[idxMinDPhiBMET].p4() + tightLeps[0].p4()).M()
+                mLepBJet = (centralJet30[idxMinDPhiBMET].p4() + tightLeps[0].p4()).M()
                 mTLepMET = mt_2(tightLeps[0].p4(),metp4)
         else:
             ret["mTClBPlusMET"] = -999
@@ -251,14 +250,13 @@ class EventVars1L_Top:
         ret['TopPt'] = TopPt
         ret['TopEt'] = TopEt
 
-
         # nearest b jet to lead lepton
         minDphiLepB = 100
         minDphiLepBidx = 0
 
         if nTightLeps == 1:
             for i, jet in enumerate(centralJet30):
-                if i in BJetMedium30idx:
+                if jet.btagCSV>bTagWP:
                     dPhiLepB = abs(jet.p4().DeltaPhi(tightLeps[0].p4()))
                     if dPhiLepB < minDphiLepB:
                         minDphiLepB = dPhiLepB
@@ -316,16 +314,6 @@ class EventVars1L_Top:
             TopVarsMtopDecorMin  .append(minValueForIdxList(MtopDecor , [ids[0] for ids in ThreeBestBTags]))
             TopVarsTopPtMin      .append(minValueForIdxList(TopPt     , [ids[0] for ids in ThreeBestBTags]))
             TopVarsTopEtMin      .append(minValueForIdxList(TopEt     , [ids[0] for ids in ThreeBestBTags]))
-            '''
-            TopVarsMTbnuMin      .append(MTbnu[minDphiLepBidx])
-            TopVarsLepBMassMin   .append(LepBMass[minDphiLepBidx])
-            TopVarsMTtopMin      .append(MTtop[minDphiLepBidx])
-            TopVarsMtopMin       .append(Mtop[minDphiLepBidx])
-            TopVarsMETovTopMin   .append(METovTop[minDphiLepBidx])
-            TopVarsMtopDecorMin  .append(MtopDecor[minDphiLepBidx])
-            TopVarsTopPtMin      .append(TopPt[minDphiLepBidx])
-            TopVarsTopEtMin      .append(TopEt[minDphiLepBidx])
-            '''
 
             mcMatchIdLep = tightLeps[0].mcMatchId
             iCorrectJet=-999
@@ -368,8 +356,18 @@ class EventVars1L_Top:
                     TopVarsTopPtMin      .append(TopPt    [i] if idxMinDPhiBMET!=-999 else -999)
                     TopVarsTopEtMin      .append(TopEt    [i] if idxMinDPhiBMET!=-999 else -999)
 
+			# nearest to lepton b jet
+            TopVarsMTbnuMin      .append(MTbnu[minDphiLepBidx])
+            TopVarsLepBMassMin   .append(LepBMass[minDphiLepBidx])
+            TopVarsMTtopMin      .append(MTtop[minDphiLepBidx])
+            TopVarsMtopMin       .append(Mtop[minDphiLepBidx])
+            TopVarsMETovTopMin   .append(METovTop[minDphiLepBidx])
+            TopVarsMtopDecorMin  .append(MtopDecor[minDphiLepBidx])
+            TopVarsTopPtMin      .append(TopPt[minDphiLepBidx])
+            TopVarsTopEtMin      .append(TopEt[minDphiLepBidx])
+
         else:
-            for i in range(6):
+            for i in range(7):
                 TopVarsMTbnuMin      .append(-999)
                 TopVarsLepBMassMin   .append(-999)
                 TopVarsMTtopMin      .append(-999)
@@ -380,7 +378,7 @@ class EventVars1L_Top:
                 TopVarsTopEtMin      .append(-999)
 
 
-        ret["nBMinVariantsTopVars"]=6
+        ret["nBMinVariantsTopVars"]=7
 
         ret["TopVarsMTbnuMin"]    =TopVarsMTbnuMin
         ret["TopVarsLepBMassMin"] =TopVarsLepBMassMin
