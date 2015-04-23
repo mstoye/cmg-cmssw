@@ -252,7 +252,7 @@ class EventVars1L_Top:
 
         # nearest b jet to lead lepton
         minDphiLepB = 100
-        minDphiLepBidx = 0
+        minDphiLepBidx = -1
 
         if nTightLeps == 1:
             for i, jet in enumerate(centralJet30):
@@ -286,7 +286,7 @@ class EventVars1L_Top:
         #        print ThreeBestBTags
         #        print sortIdsByBTag
 
-        if(nTightLeps==1) :
+        if nTightLeps == 1 and nCentralJet30 > 0:
             TopVarsMTbnuMin      .append(minValueForIdxList(MTbnu     , [ids[0] for ids in bTaggedJetsSorted]))
             TopVarsLepBMassMin   .append(minValueForIdxList(LepBMass  , [ids[0] for ids in bTaggedJetsSorted]))
             TopVarsMTtopMin      .append(minValueForIdxList(MTtop     , [ids[0] for ids in bTaggedJetsSorted]))
@@ -356,15 +356,16 @@ class EventVars1L_Top:
                     TopVarsTopPtMin      .append(TopPt    [i] if idxMinDPhiBMET!=-999 else -999)
                     TopVarsTopEtMin      .append(TopEt    [i] if idxMinDPhiBMET!=-999 else -999)
 
-			# nearest to lepton b jet
-            TopVarsMTbnuMin      .append(MTbnu[minDphiLepBidx])
-            TopVarsLepBMassMin   .append(LepBMass[minDphiLepBidx])
-            TopVarsMTtopMin      .append(MTtop[minDphiLepBidx])
-            TopVarsMtopMin       .append(Mtop[minDphiLepBidx])
-            TopVarsMETovTopMin   .append(METovTop[minDphiLepBidx])
-            TopVarsMtopDecorMin  .append(MtopDecor[minDphiLepBidx])
-            TopVarsTopPtMin      .append(TopPt[minDphiLepBidx])
-            TopVarsTopEtMin      .append(TopEt[minDphiLepBidx])
+            # nearest to lepton b jet
+            if minDphiLepBidx > -1:
+                TopVarsMTbnuMin      .append(MTbnu[minDphiLepBidx])
+                TopVarsLepBMassMin   .append(LepBMass[minDphiLepBidx])
+                TopVarsMTtopMin      .append(MTtop[minDphiLepBidx])
+                TopVarsMtopMin       .append(Mtop[minDphiLepBidx])
+                TopVarsMETovTopMin   .append(METovTop[minDphiLepBidx])
+                TopVarsMtopDecorMin  .append(MtopDecor[minDphiLepBidx])
+                TopVarsTopPtMin      .append(TopPt[minDphiLepBidx])
+                TopVarsTopEtMin      .append(TopEt[minDphiLepBidx])
 
         else:
             for i in range(7):
