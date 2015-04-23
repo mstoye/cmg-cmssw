@@ -41,7 +41,7 @@ class EventVars1L_base:
             if type(name) == 'tuple':
                 ret[name] = []
             elif type(name) == 'str':
-                ret[name] = -999.0
+                ret[name] = -999
 
         # make python lists as Collection does not support indexing in slices
         genleps = [l for l in Collection(event,"genLep","ngenLep")]
@@ -326,10 +326,10 @@ class EventVars1L_base:
         if len(tightLeps) >=1:
             recoWp4 =  tightLeps[0].p4() + metp4
             dPhiLepW = tightLeps[0].p4().DeltaPhi(recoWp4)
-            ret["DeltaPhiLepW"] = dPhiLepW
-
             ST = tightLeps[0].pt + event.met_pt
-            ret['ST'] = ST
+
+        ret["DeltaPhiLepW"] = dPhiLepW
+        ret['ST'] = ST
 
         centralJet30_DescFlag = []
         tightLeps_DescFlag = []
