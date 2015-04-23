@@ -145,8 +145,7 @@ double Topness::Topness::GetTopness( const vector<TLorentzVector>& jets,
 
     for ( unsigned int ijet = 0; ijet < jets.size(); ijet++){
         if (bDiscs.at(ijet) < bDisc_LooseWP) noBJets.push_back(&jets.at(ijet));
-        //else if (bDiscs.at(ijet) < bDisc_TightWP) lBJets.push_back(&jets.at(ijet));
-        else if (bDiscs.at(ijet) < bDisc_TightWP) noBJets.push_back(&jets.at(ijet));
+        else if (bDiscs.at(ijet) < bDisc_TightWP) lBJets.push_back(&jets.at(ijet));
         else tBJets.push_back(&jets.at(ijet));
     }
 
