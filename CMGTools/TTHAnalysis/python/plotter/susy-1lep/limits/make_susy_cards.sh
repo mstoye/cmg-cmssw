@@ -40,6 +40,8 @@ OPTIONS=" $OPTIONS -F sf/t $FT/evVarFriend_{cname}.root "
 function makeCard_1l {
     local EXPR=$1; local BINS=$2; local SYSTS=$3; local OUT=$4; local GO=$5
 
+    CutFlowCard="1l_CardsFullCutFlow.txt"
+
     # b-jet cuts
     case $nB in
         0B)  GO="${GO} -R 1nB 0nB nBJetMedium30==0 " ;;
@@ -82,10 +84,10 @@ function makeCard_1l {
     esac;
 
     if [[ "$PRETEND" == "1" ]]; then
-        echo "making datacard $OUT from makeShapeCardsSusy.py mca-Phys14_1l.txt 1l_CardsFullCutFlow.txt \"$EXPR\" \"$BINS\" $SYSTS $GO --dummyYieldsForZeroBkg;"
+        echo "making datacard $OUT from makeShapeCardsSusy.py mca-Phys14_1l.txt $CutFlowCard \"$EXPR\" \"$BINS\" $SYSTS $GO --dummyYieldsForZeroBkg;"
     else
-        echo "making datacard $OUT from makeShapeCardsSusy.py mca-Phys14_1l.txt 1l_CardsFullCutFlow.txt \"$EXPR\" \"$BINS\" $SYSTS $GO --dummyYieldsForZeroBkg;"
-        python $PLOTDIR/makeShapeCardsSusy.py $PLOTDIR/mca-Phys14_1l.txt $PLOTDIR/susy-1lep/1l_CardsFullCutFlow.txt "$EXPR" "$BINS" $SYSTS -o $OUT $GO --dummyYieldsForZeroBkg;
+        echo "making datacard $OUT from makeShapeCardsSusy.py mca-Phys14_1l.txt $CutFlowCard \"$EXPR\" \"$BINS\" $SYSTS $GO --dummyYieldsForZeroBkg;"
+        python $PLOTDIR/makeShapeCardsSusy.py $PLOTDIR/mca-Phys14_1l.txt $PLOTDIR/susy-1lep/$CutFlowCard "$EXPR" "$BINS" $SYSTS -o $OUT $GO --dummyYieldsForZeroBkg;
         echo "  -- done at $(date)";
     fi;
 }
