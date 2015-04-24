@@ -158,6 +158,11 @@ if [[ "$1" == "1l-combine" ]]; then
 
     echo "Making combined datacards"
 
+    if [[ "$PRETEND" == "1" ]]; then
+	echo "Pretending to do cards"
+	exit 0
+    fi
+
     for D in $OUTDIR/T[0-9]*; do
         test -f $D/CnC2015X_2B_ST0_68j_HT0.card.txt || continue
         (cd $D && echo "    $D";
