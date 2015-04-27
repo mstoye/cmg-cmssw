@@ -48,7 +48,7 @@ function makeCard_1l {
         1B)  GO="${GO} -R 1nB 1nB nBJetMedium30==1 " ;;
         2B)  GO="${GO} -R 1nB 2nB nBJetMedium30==2 " ;;
         2Btop)  GO="${GO} -R 1nB 2nB nBJetMedium30==2&&Topness>5 " ;;
-        3p)  GO="${GO} -R 1nB 3nBp nBJetMedium30>=3 " ;;
+        3B)  GO="${GO} -R 1nB 3nBp nBJetMedium30>=3 " ;;
     esac;
 
     # ST categories
@@ -138,7 +138,7 @@ if [[ "$1" == "1l-makeCards" ]]; then
 
 
     echo "Making individual datacards"
-    for ST in ST0 ST1 ST2 ST3 ST4; do for nJ in 68j 6Infj 9Infj; do for nB in 2B 3p; do for HT in HT0 HT1; do
+    for ST in ST0 ST1 ST2 ST3 ST4; do for nJ in 68j 6Infj 9Infj; do for nB in 2B 3B; do for HT in HT0 HT1; do
 #    for ST in ST0 ST1 ST2 ST3 ST4; do
         echo " --- CnC2015X_${nB}_${ST}_${nJ}_${HT} ---"
         makeCard_1l $CnC_expr $CnC_bins $SYSTS CnC2015X_${nB}_${ST}_${nJ}_${HT} "$OPTIONS";
@@ -166,13 +166,13 @@ if [[ "$1" == "1l-combine" ]]; then
     for D in $OUTDIR/T[0-9]*; do
         test -f $D/CnC2015X_2B_ST0_68j_HT0.card.txt || continue
         (cd $D && echo "    $D";
-            for nB in 2B 3p; do
+            for nB in 2B 3B; do
                 combineCardsSmart CnC2015X_${nB}_{ST0,ST1,ST2,ST3,ST4}_6Infj_{HT0,HT1}.card.txt >  CnC2015X_${nB}_standardnJ.card.txt
                 combineCardsSmart CnC2015X_${nB}_{ST0,ST1,ST2,ST3,ST4}_{68j,9Infj}_{HT0,HT1}.card.txt >  CnC2015X_${nB}_finenJ.card.txt
 
             done
-            combineCardsSmart CnC2015X_{2B,3p}_standardnJ.card.txt >  CnC2015X_standardnJ.card.txt # standard nJet-binning; HT-binning
-            combineCardsSmart CnC2015X_{2B,3p}_finenJ.card.txt >  CnC2015X_finenJ.card.txt #fine nJet-binning; HT-binning
+            combineCardsSmart CnC2015X_{2B,3B}_standardnJ.card.txt >  CnC2015X_standardnJ.card.txt # standard nJet-binning; HT-binning
+            combineCardsSmart CnC2015X_{2B,3B}_finenJ.card.txt >  CnC2015X_finenJ.card.txt #fine nJet-binning; HT-binning
 
         )
     done
