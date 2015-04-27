@@ -1,4 +1,4 @@
-== 1 tight lepton: nTightLeps == 1 && nTightEl == 1
+== 1 tight lepton: nTightLeps == 1
 hard lepton: LepGood1_pt > 25
 #soft lepton: LepGood1_pt < 25
 no VetoLeps: nVetoLeps==0
