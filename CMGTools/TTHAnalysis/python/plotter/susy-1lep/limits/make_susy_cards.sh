@@ -3,11 +3,11 @@
 if [[ "$1" == "SingleLepAFS" ]]; then
     shift # shift register
     T="/afs/cern.ch/work/k/kirschen/public/PlotExampleSamples/V3";
-    FT="/afs/cern.ch/work/k/kirschen/public/PlotExampleSamples/V3/PHYS14_V3_Friend_Batool"
+    FT="/afs/cern.ch/work/a/alobanov/public/SUSY/CMG/CMGtuples/FriendTrees/phys14_v3_btagCSVv2"
     J=4;
 elif [[ "$HOSTNAME" == *"lxplus"* ]] ; then
     T="/afs/cern.ch/work/k/kirschen/public/PlotExampleSamples/V3";
-    FT="/afs/cern.ch/work/k/kirschen/public/PlotExampleSamples/V3/PHYS14_V3_Friend_Batool"
+    FT="/afs/cern.ch/work/a/alobanov/public/SUSY/CMG/CMGtuples/FriendTrees/phys14_v3_btagCSVv2"
     J=4;
 elif [[ "$1" == "DESYV3" ]] ; then
     shift # shift register
@@ -25,7 +25,7 @@ else
 fi
 
 LUMI=4.0
-OUTDIR="susy_cards_1l_4fb"
+OUTDIR="susy_cards_1l_4fb_test"
 OPTIONS=" -P $T -j $J -l $LUMI -f --s2v --tree treeProducerSusySingleLepton --od $OUTDIR --asimov "
 
 # Get current plotter dir
