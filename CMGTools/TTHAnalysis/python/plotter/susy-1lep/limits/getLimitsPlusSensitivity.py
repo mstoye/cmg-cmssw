@@ -13,7 +13,7 @@ if 'CMSSW_7_1' not in cmssw_vers:
     print "Need CMSSW_7_1_X with limit tool!"
     exit(0)
 
-cardDirectory="susy_cards_1l_4fb"
+cardDirectory="susy_cards_1l_4fb_csv_nostop"
 cardDirectory = os.path.abspath(cardDirectory)
 
 limitDir = cardDirectory+"/limits/"
@@ -26,9 +26,9 @@ print
 
 Samples = []
 Samples.append("T1tttt_HL_1500_100")
+Samples.append("T1tttt_HM_1200_800")
 #Samples.append("T1ttbbWW_1300_300_290")
 #Samples.append("T1ttbbWW_1300_300_295")
-Samples.append("T1tttt_HM_1200_800")
 #Samples.append("T5qqqqWW_Gl1200_Chi1000_LSP800")
 #Samples.append("T5ttttDeg_1300_300_280")
 
@@ -41,6 +41,9 @@ Samples.append("T1tttt_HM_1200_800")
 #VariantSnippet = ["standardnJ", "finenJ","finenJ_HT1","standardnJ_HT1"]
 #VariantSnippet = ["finenJ_HT1","standardnJ_HT1","finenJ_HTTop","standardnJ_HTTop"]
 VariantSnippet = ["standardnJ", "finenJ"]
+#VariantSnippet = ["stdNj_TopTag", "fineNj_TopTag", "stdNj_TopTagTau", "fineNj_TopTagTau"]
+#VariantSnippet = ["fineNj_TopTagTau", "stdNj_TopTagTau"]
+#VariantSnippet = ["stdNj_TopTag"]#,"fineNj_TopTag"]
 
 
 #standard: baseline
@@ -55,30 +58,53 @@ VariantSnippet = ["standardnJ", "finenJ"]
 limitdict = {}
 sigdict = {}
 for s_i, s in enumerate(Samples):
+
+    print 80*'#'
+    print "Limits for", s
+
     for v_i, v in enumerate(VariantSnippet):
 
-        print 80*'#'
-        print  "Limits_"+s+"_"+v+".txt"
+        limfName = "Limits_"+s+"_"+v
+        signfName = "Significance_"+s+"_"+v
+        cardName = cardDirectory+"/"+s+"/CnC2015X_"+v+".card.txt"
 
-        os.system("combine -M Asymptotic "+cardDirectory+"/"+s+"/CnC2015X_"+v+".card.txt -n Limits_"+s+"_"+v+" &> Limits_"+s+"_"+v+".txt")
-        os.system("combine -M ProfileLikelihood --significance "+cardDirectory+"/"+s+"/CnC2015X_"+v+".card.txt -t -1 --expectSignal=1 -n Significance_"+s+"_"+v+" &> Significance_"+s+"_"+v+".txt")
+        sigline = 'Fail'
+        limitline = 'Fail'
 
-        lf=open("Limits_"+s+"_"+v+".txt")
+        print "# Variant:", v
+
+        os.system("combine -M Asymptotic "+ cardName + " -n " + limfName+ " &> "+ limfName + ".txt")
+        os.system("combine -M ProfileLikelihood --significance "+ cardName + " -t -1 --expectSignal=1 -n "+ signfName +" &> "+ signfName + ".txt")
+
+        lf=open(limfName+".txt")
         llines=lf.readlines()
 
-        sf=open("Significance_"+s+"_"+v+".txt")
+        for line in llines:
+            if "50.0%" in line:
+                limitline = line
+        #limitline = llines[6]
+
+        sf=open(signfName+".txt")
         slines=sf.readlines()
 
-        limitline = llines[6]
-        print limitline#,"bla0"
+        for sline in slines:
+            if "Signif" in sline:
+                sigline = sline
+        #sigline= slines[2]
+
+        if limitline == 'Fail':
+            print 'Limit not found!'
+        elif sigline == 'Fail':
+            print 'Significance not found!'
+        else:
+            print limitline, sigline
+
 #        print limitline.split("<")[1],"bla1"
 #        snipp=  limitline.split("<")[1]
 #        print snipp, "bla11"
 #        print (limitline.split("<")[1]).split()[0],"bla2"
-        limitdict[(s,v)]= (limitline.split("<")[1]).split()[0]
-        sigline= slines[2]
-        print sigline
 
+        # fill dict
+        #limitdict[(s,v)]= (limitline.split("<")[1]).split()[0]
 
-
-
+print limitdict
