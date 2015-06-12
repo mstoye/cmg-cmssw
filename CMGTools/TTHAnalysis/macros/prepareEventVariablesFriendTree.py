@@ -7,6 +7,8 @@ MODULES = []
 
 from CMGTools.TTHAnalysis.tools.eventVars_1l_base import EventVars1L_base
 MODULES.append( ('1l_Basics', EventVars1L_base()) )
+from CMGTools.TTHAnalysis.tools.eventVars_1l_bkgDilep import EventVars1L_bkgDilep
+MODULES.append( ('1l_bkgDilep', EventVars1L_bkgDilep()) )
 from CMGTools.TTHAnalysis.tools.eventVars_1l_top import EventVars1L_Top
 MODULES.append( ('1l_TopVars', EventVars1L_Top()) )
 from CMGTools.TTHAnalysis.tools.eventVars_1l_extra import EventVars1L_extra
