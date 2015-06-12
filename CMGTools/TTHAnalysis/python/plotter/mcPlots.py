@@ -490,6 +490,8 @@ class PlotMaker:
             dir.cd()
             for pspec in plots.plots():
                 print "    plot: ",pspec.name
+                if options.out: pspec.name = options.out + "_" + pspec.name
+                print "    plot: ",pspec.name
                 pmap = mca.getPlots(pspec,cut,makeSummary=True)
                 #
                 # blinding policy
@@ -564,6 +566,18 @@ class PlotMaker:
                             plot.SetMarkerSize(1.5)
                         else:
                             plot.SetMarkerStyle(0)
+                if pspec.getOption('normEachBin',"False")=="True":
+                    for b in xrange(1,stack.GetHists().First().GetNbinsX()+1):
+                        IntegralBin=0
+                        for obj in stack.GetHists():
+                            IntegralBin+=obj.GetBinContent(b);
+                            print IntegralBin
+                        IntegralBin/=100
+                        if IntegralBin>0:
+                            for obj in stack.GetHists():
+                                obj.SetBinContent(b,obj.GetBinContent(b)/IntegralBin);
+                                obj.SetBinError(b,obj.GetBinError(b)/IntegralBin);
+
                 stack.Draw("GOFF")
                 stack.GetYaxis().SetTitle(pspec.getOption('YTitle',"Events"))
                 stack.GetXaxis().SetTitle(pspec.getOption('XTitle',pspec.name))
@@ -764,8 +778,12 @@ if __name__ == "__main__":
     cuts = CutsFile(args[1],options)
     plots = PlotFile(args[2],options)
     outname  = options.out if options.out else (args[2].replace(".txt","")+".root")
+    print outname
     if (not options.out) and options.printDir:
         outname = options.printDir + "/"+os.path.basename(args[2].replace(".txt","")+".root")
+    elif options.out and options.printDir:
+        outname = options.printDir + "/" + outname +".root"
+    print outname
     if os.path.dirname(outname) and not os.path.exists(os.path.dirname(outname)):
         os.system("mkdir -p "+os.path.dirname(outname))
         if os.path.exists("/afs/cern.ch"): os.system("cp /afs/cern.ch/user/a/alobanov/public/php/index.php "+os.path.dirname(outname))
