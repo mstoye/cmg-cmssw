@@ -46,6 +46,7 @@ class EventVars1L_base:
 
         # make python lists as Collection does not support indexing in slices
         genleps = [l for l in Collection(event,"genLep","ngenLep")]
+        genparts = [l for l in Collection(event,"GenPart","nGenPart")]
 
         leps = [l for l in Collection(event,"LepGood","nLepGood")]
         jets = [j for j in Collection(event,"Jet","nJet")]
@@ -345,18 +346,29 @@ class EventVars1L_base:
             if abs(l.mcMatchId)==6: tightLeps_DescFlag.append(1)    #top
             elif abs(l.mcMatchId)==24: tightLeps_DescFlag.append(2) #W-boson
             else: tightLeps_DescFlag.append(0)
+            
+        topDecayMode = -999 #0: hadronic; 1: leptonic
+        antiTopDecayMode = -999 #0: hadronic; 1: leptonic
+        for g in genparts:
+            if g.grandmotherId == 6 and abs(g.pdgId)>10 and abs(g.pdgId)<17: topDecayMode=1
+            elif g.grandmotherId == 6 and abs(g.pdgId)<6: topDecayMode=0
+            elif g.grandmotherId == -6 and abs(g.pdgId)>10 and abs(g.pdgId)<17: antiTopDecayMode=1
+            elif g.grandmotherId == -6 and abs(g.pdgId)<6: antiTopDecayMode=0
+            elif abs(g.grandmotherId) == 6 and not g.pdgId==22: print "SOMETHING GOING WRONG!!! W-boson should decay to either quarks or leptons (or radiate photons); g.pdgId", g.pdgId
 
         for i,j in enumerate(centralJet30):
             if abs(j.mcMatchId)==6:
-                if len(genleps)>0 and abs(genleps[0].sourceId) ==6 and abs(j.mcFlavour)==5:
-                    if j.mcMatchId==genleps[0].sourceId:
-                        centralJet30_DescFlag.append(genleps[0].charge)
+                if abs(j.mcFlavour)==5:
+                    if j.mcMatchId==6 and topDecayMode==1:
+                        centralJet30_DescFlag.append(1) # leptonic decay, positively charged W
+                    elif j.mcMatchId==-6 and antiTopDecayMode==1:
+                        centralJet30_DescFlag.append(-1) # leptonic decay, negatively charged W
                     else:
-                        centralJet30_DescFlag.append(2)
-            elif abs(j.mcFlavour) not in [0,5,21]:
-                centralJet30_DescFlag.append(3)
-            else: centralJet30_DescFlag.append(-999) #; print "should not happen..."
-        else: centralJet30_DescFlag.append(0)
+                        centralJet30_DescFlag.append(2) # hadronic decay
+                elif abs(j.mcFlavour) not in [0,5,21]:
+                    centralJet30_DescFlag.append(3)
+                else: centralJet30_DescFlag.append(-999) #; print "should not happen..."
+            else: centralJet30_DescFlag.append(0)
 
         ret["centralJet30_DescFlag"]=centralJet30_DescFlag
         ret["tightLeps_DescFlag"]=tightLeps_DescFlag
