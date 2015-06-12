@@ -12,13 +12,11 @@ def minValueForIdxList(values,idxlist):
     cleanedValueList = [val for i,val in enumerate(values) if i in idxlist]
     if len(cleanedValueList)>0: return min(cleanedValueList)
     else: return -999
-#  print cleanedValueList, min(cleanedValueList)#d, key=d.get)
 
 
 class EventVars1L_bkgDilep:
     def __init__(self):
-        self.branches = [ #"DL_DeltaPhiLepW", #DL_ --> Dilepton BKG,
-                          #"DL_ST", 
+        self.branches = [ 
                           "DL_LepGoodOne_pt", "DL_l1l2ovMET", "DL_Vecl1l2ovMET", "DL_DPhil1l2",
                           ("nLostLepTreatments","I"),
                           ("DL_ST","F",10,"nLostLepTreatments"),("DL_dPhiLepW","F",10,"nLostLepTreatments")
@@ -93,20 +91,10 @@ class EventVars1L_bkgDilep:
 
 
         # deltaPhi between the (single) lepton and the reconstructed W (lep + MET)
-#        dPhiLepW = -999 # set default value to -999 to spot "empty" entries
-#        # ST of lepton and MET
-#        ST = -999
-
+        # ST of lepton and MET
         DL_ST = []
         DL_dPhiLepW = []
 
-
-
-#        dPhiLepW_AddFull = -999
-#        ST_AddFull = -999
-#
-#        dPhiLepW_AddThird = -999
-#        ST_AddThird = -999
 
         LepToKeep_pt = -999
         l1l2ovMET = -999
@@ -121,38 +109,29 @@ class EventVars1L_bkgDilep:
             if tightLeps[0].pdgId==-tightLeps[1].pdgId and abs(SumP4.M()-91.2)<10.: passPreSel= False
             
             if passPreSel:
-                #            random = TRandom2(event.evt)
                 random = TRandom2(event.evt*event.lumi)
                 uniform01 = random.Rndm()
                 lepToKeep = int(uniform01>0.5)
                 lepToDiscard = int(not lepToKeep)
-    #            print event.evt*event.lumi, lepToKeep
                 
                 Met2D = TVector2(metp4.Px(),metp4.Py())
                 LepToDiscard2D = TVector2(tightLeps[lepToDiscard].p4().Px(), tightLeps[lepToDiscard].p4().Py())
                 LepToKeep2D = TVector2(tightLeps[lepToKeep].p4().Px(), tightLeps[lepToKeep].p4().Py())
-#not add the discarded lepton to MET
-#                Met2D = Met2D + LepToDiscard2D
-                
-#                LepToDiscardThirdPt = 1/3. *LepToDiscard2D
 
                 Met2D_AddFull = Met2D + LepToDiscard2D
                 Met2D_AddThird = Met2D + (1/3.*LepToDiscard2D)
-#                print Met2D.Mod(), Met2D_AddFull.Mod(), Met2D_AddThird.Mod(), LepToDiscard2D.Mod(), LepToDiscardThirdPt.Mod()
-
-            #            print Met2D.Mod()-metp4.Pt()
                 LepToKeep_pt = LepToKeep2D.Mod()
                 
                 recoWp4 = LepToKeep2D + Met2D
-                DL_dPhiLepW.append(LepToKeep2D.DeltaPhi(recoWp4))
+                DL_dPhiLepW.append(LepToKeep2D.DeltaPhi(recoWp4)) # [0]: not adding leptons to MET
                 DL_ST.append(LepToKeep2D.Mod() + Met2D.Mod())
 
                 recoWp4_AddFull = LepToKeep2D + Met2D_AddFull
-                DL_dPhiLepW.append(LepToKeep2D.DeltaPhi(recoWp4_AddFull))
+                DL_dPhiLepW.append(LepToKeep2D.DeltaPhi(recoWp4_AddFull))# [0]: adding lost lepton pt to met
                 DL_ST.append(LepToKeep2D.Mod() + Met2D_AddFull.Mod())
 
                 recoWp4_AddThird = LepToKeep2D + Met2D_AddThird
-                DL_dPhiLepW.append(LepToKeep2D.DeltaPhi(recoWp4_AddThird))
+                DL_dPhiLepW.append(LepToKeep2D.DeltaPhi(recoWp4_AddThird))# [2]: adding 1/3 of lepton ptto met 
                 DL_ST.append(LepToKeep2D.Mod() + Met2D_AddThird.Mod())
 
                 l1l2ovMET = (tightLeps[0].pt + tightLeps[1].pt)/metp4.Pt()
@@ -163,20 +142,12 @@ class EventVars1L_bkgDilep:
         ret["nLostLepTreatments"]=3
         if len(DL_ST)!=ret["nLostLepTreatments"]:
             for i in range(0,ret["nLostLepTreatments"]):
-#                print i, "bla"
                 DL_ST.append(-999)
                 DL_dPhiLepW.append(-999)
-#        else: print "juhu"
         
         ret["DL_ST"]    =DL_ST
         ret["DL_dPhiLepW"] = DL_dPhiLepW
-#
-#        ret["DL_DeltaPhiLepW"] = dPhiLepW
-#        ret['DL_ST'] = ST
-#        ret["DL_DeltaPhiLepW_AddFull"] = dPhiLepW_AddFull
-#        ret['DL_ST_AddFull'] = ST_AddFull
-#        ret["DL_DeltaPhiLepW_AddThird"] = dPhiLepW_AddThird
-#        ret['DL_ST_AddThird'] = ST_AddThird
+
         ret['DL_LepGoodOne_pt'] = LepToKeep_pt
         ret['DL_l1l2ovMET'] = l1l2ovMET
         ret['DL_Vecl1l2ovMET'] = Vecl1l2ovMET
