@@ -48,7 +48,7 @@ for i,b in enumerate(mca.listBackgrounds()):
     procs.append(b); iproc[b] = i+1
 
 if len(backgrounds)==0 and options.dummyYieldsForZeroBkg==True:
-    print "Yield of dummy always set to 0.0025*options.lumi (in 1/fb). ScaleFactor of TTBar is", mca.getScales("TT"), ". Scale factor set to", 0.0025*options.lumi
+    if mca.hasProcess("TT"): print "Yield of dummy always set to 0.0025*options.lumi (in 1/fb). ScaleFactor of TTBar is", mca.getScales("TT"), ". Scale factor set to", 0.0025*options.lumi
     print options.lumi
     backgrounds.append("DummyContent")
     procs.append("DummyContent"); iproc["DummyContent"] = 1
