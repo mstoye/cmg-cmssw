@@ -489,9 +489,6 @@ class PlotMaker:
                     dir = self._dir.mkdir(subname,title)
             dir.cd()
             for pspec in plots.plots():
-                print "    plot: ",pspec.name
-                if options.out: pspec.name = options.out + "_" + pspec.name
-                print "    plot: ",pspec.name
                 pmap = mca.getPlots(pspec,cut,makeSummary=True)
                 #
                 # blinding policy
@@ -571,8 +568,6 @@ class PlotMaker:
                         IntegralBin=0
                         for obj in stack.GetHists():
                             IntegralBin+=obj.GetBinContent(b);
-                            print IntegralBin
-                        IntegralBin/=100
                         if IntegralBin>0:
                             for obj in stack.GetHists():
                                 obj.SetBinContent(b,obj.GetBinContent(b)/IntegralBin);
@@ -733,9 +728,10 @@ class PlotMaker:
                                     c1.SetRightMargin(0.20)
                                     plot.SetContour(100)
                                     plot.Draw("COLZ")
-                                    c1.Print("%s/%s_%s.%s" % (fdir, pspec.name, p, ext))
+                                    c1.Print("%s/%s_%s.%s" % (fdir, pspec.name if not options.out else options.out + "_" + pspec.name, p, ext))
                             else:
-                                c1.Print("%s/%s.%s" % (fdir, pspec.name, ext))
+                                c1.Print("%s/%s.%s" % (fdir, pspec.name if not options.out else options.out + "_" + pspec.name, ext))
+
                 c1.Close()
 def addPlotMakerOptions(parser):
     addMCAnalysisOptions(parser)
