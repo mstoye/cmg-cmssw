@@ -39,7 +39,7 @@ def getPhysObjectArray(j): # https://github.com/HephySusySW/Workspace/blob/72X-m
 
 class EventVars1L_extra:
     def __init__(self):
-        self.branches = [ "MT2W", "Topness" ]
+        self.branches = [ "MT2W", "Topness" ,'TopnessTwoCorrectBFromTop']
 
     def listBranches(self):
         return self.branches[:]
@@ -74,6 +74,7 @@ class EventVars1L_extra:
         # get selected jets
         centralJet30 = []
         centralJet30idx = base['centralJet30idx']
+        centralJet30_DescFlag = base['centralJet30_DescFlag']
         centralJet30 = [jets[idx] for idx in centralJet30idx]
         nCentralJet30 = len(centralJet30)
 
@@ -153,6 +154,18 @@ class EventVars1L_extra:
                 print tempTopness, "this will fail"
             else:
                 ret['Topness'] = log(tempTopness) #this is really slow!
+            
+            #As cross-check: Calculate topness for the two b-jets from the top-event
+            
+            realBJetsidx = []
+            for i,j in enumerate(centralJet30):
+                if centralJet30_DescFlag[i] in [-1,1,2]: realBJetsidx.append(i)
+
+            if len(realBJetsidx)==2:
+                ret['TopnessTwoCorrectBFromTop'] = log(topness.Calc( p4_jets[0], p4_jets[1], lepTLorentz, metp4))
+            else:              
+                ret['TopnessTwoCorrectBFromTop'] = -999
+
 
         # return branches
         return ret
