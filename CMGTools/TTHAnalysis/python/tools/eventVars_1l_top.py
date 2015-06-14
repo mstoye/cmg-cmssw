@@ -287,6 +287,7 @@ class EventVars1L_Top:
         #        print sortIdsByBTag
 
         if nTightLeps == 1 and nCentralJet30 > 0:
+            #0: minimum of b-tagged jets
             TopVarsMTbnuMin      .append(minValueForIdxList(MTbnu     , [ids[0] for ids in bTaggedJetsSorted]))
             TopVarsLepBMassMin   .append(minValueForIdxList(LepBMass  , [ids[0] for ids in bTaggedJetsSorted]))
             TopVarsMTtopMin      .append(minValueForIdxList(MTtop     , [ids[0] for ids in bTaggedJetsSorted]))
@@ -296,6 +297,7 @@ class EventVars1L_Top:
             TopVarsTopPtMin      .append(minValueForIdxList(TopPt     , [ids[0] for ids in bTaggedJetsSorted]))
             TopVarsTopEtMin      .append(minValueForIdxList(TopEt     , [ids[0] for ids in bTaggedJetsSorted]))
 
+            #1: minimum of b-tagged jets (+ adding next-best b-disc. jet)
             TopVarsMTbnuMin      .append(minValueForIdxList(MTbnu     , [ids[0] for ids in bTaggedJetsPPSorted]))
             TopVarsLepBMassMin   .append(minValueForIdxList(LepBMass  , [ids[0] for ids in bTaggedJetsPPSorted]))
             TopVarsMTtopMin      .append(minValueForIdxList(MTtop     , [ids[0] for ids in bTaggedJetsPPSorted]))
@@ -305,7 +307,7 @@ class EventVars1L_Top:
             TopVarsTopPtMin      .append(minValueForIdxList(TopPt     , [ids[0] for ids in bTaggedJetsPPSorted]))
             TopVarsTopEtMin      .append(minValueForIdxList(TopEt     , [ids[0] for ids in bTaggedJetsPPSorted]))
 
-
+            #2: always consider the three jets with the best b-tag values (no pass of any working-point required)
             TopVarsMTbnuMin      .append(minValueForIdxList(MTbnu     , [ids[0] for ids in ThreeBestBTags]))
             TopVarsLepBMassMin   .append(minValueForIdxList(LepBMass  , [ids[0] for ids in ThreeBestBTags]))
             TopVarsMTtopMin      .append(minValueForIdxList(MTtop     , [ids[0] for ids in ThreeBestBTags]))
@@ -324,6 +326,7 @@ class EventVars1L_Top:
                         iCorrectJet=i
                         if jet.btagCSV>bTagWP: correctJetBTagged=True
 
+            #3: value for the correct b-jet (i.e. the one matching the lepton)
             TopVarsMTbnuMin      .append(MTbnu     [iCorrectJet] if iCorrectJet>-999 else -999)
             TopVarsLepBMassMin   .append(LepBMass  [iCorrectJet] if iCorrectJet>-999 else -999)
             TopVarsMTtopMin      .append(MTtop     [iCorrectJet] if iCorrectJet>-999 else -999)
@@ -335,6 +338,7 @@ class EventVars1L_Top:
 
             foundCorrectBJetAndIsTagged = iCorrectJet>-999 and correctJetBTagged
 
+            #4: value for the correct b-jet (if actually identified as b-jet (tagged))
             TopVarsMTbnuMin      .append(MTbnu     [iCorrectJet] if foundCorrectBJetAndIsTagged else -999)
             TopVarsLepBMassMin   .append(LepBMass  [iCorrectJet] if foundCorrectBJetAndIsTagged else -999)
             TopVarsMTtopMin      .append(MTtop     [iCorrectJet] if foundCorrectBJetAndIsTagged else -999)
@@ -344,28 +348,25 @@ class EventVars1L_Top:
             TopVarsTopPtMin      .append(TopPt     [iCorrectJet] if foundCorrectBJetAndIsTagged else -999)
             TopVarsTopEtMin      .append(TopEt     [iCorrectJet] if foundCorrectBJetAndIsTagged else -999)
 
-
-            for i,jet in  enumerate(centralJet30): #testing all jets as b-jet in top-reco
-                if centralJet30idx[i]==idxMinDPhiBMET:
-                    TopVarsMTbnuMin      .append(MTbnu    [i] if idxMinDPhiBMET!=-999 else -999)
-                    TopVarsLepBMassMin   .append(LepBMass [i] if idxMinDPhiBMET!=-999 else -999)
-                    TopVarsMTtopMin      .append(MTtop    [i] if idxMinDPhiBMET!=-999 else -999)
-                    TopVarsMtopMin       .append(Mtop     [i] if idxMinDPhiBMET!=-999 else -999)
-                    TopVarsMETovTopMin   .append(METovTop [i] if idxMinDPhiBMET!=-999 else -999)
-                    TopVarsMtopDecorMin  .append(MtopDecor[i] if idxMinDPhiBMET!=-999 else -999)
-                    TopVarsTopPtMin      .append(TopPt    [i] if idxMinDPhiBMET!=-999 else -999)
-                    TopVarsTopEtMin      .append(TopEt    [i] if idxMinDPhiBMET!=-999 else -999)
-
-            # nearest to lepton b jet
-            if minDphiLepBidx > -1:
-                TopVarsMTbnuMin      .append(MTbnu[minDphiLepBidx])
-                TopVarsLepBMassMin   .append(LepBMass[minDphiLepBidx])
-                TopVarsMTtopMin      .append(MTtop[minDphiLepBidx])
-                TopVarsMtopMin       .append(Mtop[minDphiLepBidx])
-                TopVarsMETovTopMin   .append(METovTop[minDphiLepBidx])
-                TopVarsMtopDecorMin  .append(MtopDecor[minDphiLepBidx])
-                TopVarsTopPtMin      .append(TopPt[minDphiLepBidx])
-                TopVarsTopEtMin      .append(TopEt[minDphiLepBidx])
+            #5: consider the jet closest in dphi to MET
+            TopVarsMTbnuMin      .append(MTbnu    [idxMinDPhiBMET] if idxMinDPhiBMET!=-999 else -999)
+            TopVarsLepBMassMin   .append(LepBMass [idxMinDPhiBMET] if idxMinDPhiBMET!=-999 else -999)
+            TopVarsMTtopMin      .append(MTtop    [idxMinDPhiBMET] if idxMinDPhiBMET!=-999 else -999)
+            TopVarsMtopMin       .append(Mtop     [idxMinDPhiBMET] if idxMinDPhiBMET!=-999 else -999)
+            TopVarsMETovTopMin   .append(METovTop [idxMinDPhiBMET] if idxMinDPhiBMET!=-999 else -999)
+            TopVarsMtopDecorMin  .append(MtopDecor[idxMinDPhiBMET] if idxMinDPhiBMET!=-999 else -999)
+            TopVarsTopPtMin      .append(TopPt    [idxMinDPhiBMET] if idxMinDPhiBMET!=-999 else -999)
+            TopVarsTopEtMin      .append(TopEt    [idxMinDPhiBMET] if idxMinDPhiBMET!=-999 else -999)
+            
+            #6: nearest to lepton b jet
+            TopVarsMTbnuMin      .append(MTbnu[minDphiLepBidx]    if minDphiLepBidx>-1 else -999)
+            TopVarsLepBMassMin   .append(LepBMass[minDphiLepBidx] if minDphiLepBidx>-1 else -999)
+            TopVarsMTtopMin      .append(MTtop[minDphiLepBidx]    if minDphiLepBidx>-1 else -999)
+            TopVarsMtopMin       .append(Mtop[minDphiLepBidx]     if minDphiLepBidx>-1 else -999)
+            TopVarsMETovTopMin   .append(METovTop[minDphiLepBidx] if minDphiLepBidx>-1 else -999)
+            TopVarsMtopDecorMin  .append(MtopDecor[minDphiLepBidx]if minDphiLepBidx>-1 else -999)
+            TopVarsTopPtMin      .append(TopPt[minDphiLepBidx]    if minDphiLepBidx>-1 else -999)
+            TopVarsTopEtMin      .append(TopEt[minDphiLepBidx]    if minDphiLepBidx>-1 else -999)
 
         else:
             for i in range(7):
