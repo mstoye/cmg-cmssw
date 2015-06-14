@@ -31,6 +31,9 @@ Samples.append("T1tttt_HL_1500_100")
 Samples.append("T1tttt_HM_1200_800")
 #Samples.append("T5qqqqWW_Gl1200_Chi1000_LSP800")
 #Samples.append("T5ttttDeg_1300_300_280")
+#Samples.append("T2tt_425_325")
+#Samples.append("T2tt_650_325")
+#Samples.append("T2tt_850_100")
 
 
 
@@ -40,7 +43,25 @@ Samples.append("T1tttt_HM_1200_800")
 #VariantSnippet = ["standardnJ_HighLowLepPt","finenJ_HighLowLepPt"]
 #VariantSnippet = ["standardnJ", "finenJ","finenJ_HT1","standardnJ_HT1"]
 #VariantSnippet = ["finenJ_HT1","standardnJ_HT1","finenJ_HTTop","standardnJ_HTTop"]
-VariantSnippet = ["standardnJ", "finenJ"]
+#VariantSnippet = ["standardnJ", "finenJ","allnJ", "allnJTopnesses"]
+
+VariantSnippet = ["NonExtreme_standardnJ", "NonExtreme_68nJ", "NonExtreme_68nJTopness", "NonExtreme_68nJDPhi05", "NonExtreme_68nJSingleTopness"]
+
+
+VariantSnippet = []
+
+#for ST in ["ST4"]:
+for ST in ["ST0", "ST1", "ST2", "ST3", "ST4"]:
+#    for nJ in ["68j", "6Infj", "9Infj"]:
+    for nJ in ["45j"]:
+        for nB in ["2B", "3p"]:
+#        for nB in ["2B"]:
+            for HT in ["HT0", "HT1"]:
+#            for HT in ["HT0"]:
+                for RD in ["DPhi00", "DPhi05", "DPhi10", "Stop", "Top"]:
+                    VariantSnippet.append(nB+"_"+ST+"_"+nJ+"_"+HT+"_"+RD)
+
+#VariantSnippet = ["2B_ST0_9Infj_HT0_Top"]
 
 
 #standard: baseline
@@ -58,6 +79,7 @@ for s_i, s in enumerate(Samples):
     for v_i, v in enumerate(VariantSnippet):
 
         print 80*'#'
+        print cardDirectory+"/"+s+"/CnC2015X_"+v+".card.txt"
         print  "Limits_"+s+"_"+v+".txt"
 
         os.system("combine -M Asymptotic "+cardDirectory+"/"+s+"/CnC2015X_"+v+".card.txt -n Limits_"+s+"_"+v+" &> Limits_"+s+"_"+v+".txt")
@@ -69,16 +91,24 @@ for s_i, s in enumerate(Samples):
         sf=open("Significance_"+s+"_"+v+".txt")
         slines=sf.readlines()
 
-        limitline = llines[6]
-        print limitline#,"bla0"
-#        print limitline.split("<")[1],"bla1"
-#        snipp=  limitline.split("<")[1]
-#        print snipp, "bla11"
-#        print (limitline.split("<")[1]).split()[0],"bla2"
-        limitdict[(s,v)]= (limitline.split("<")[1]).split()[0]
-        sigline= slines[2]
-        print sigline
-
+        RunSuccessfully = False
+        if len(llines)>5 and len(slines)>1:
+            RunSuccessfully = True
+            if "You must have at least one signal process (id <= 0)" in llines[8]:
+                print llines[8]
+                RunSuccessfully= False
+        if RunSuccessfully:
+            limitline = llines[6]
+            limitdict[(s,v)]= (limitline.split("<")[1]).split()[0]
+            print limitdict[(s,v)]
+            sigline= slines[2]
+            sigdict[(s,v)]= (sigline.split(":")[1]).split()[0]
+            print sigdict[(s,v)]
+        else: 
+            print "WARNING: Output files not in the correct format..."
+            for line in llines: print line,
+            for line in slines: print line,
+            open("Failed_"+s+"_"+v+".txt", 'a').close()
 
 
 
