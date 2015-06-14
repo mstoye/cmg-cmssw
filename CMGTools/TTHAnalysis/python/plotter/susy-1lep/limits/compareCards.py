@@ -10,7 +10,7 @@ from pprint import pprint
 from optparse import OptionParser
 parser = OptionParser(
     usage="%prog [options] [label=datacard.txt | datacard.txt]",
-    epilog="The label=datacard.txt syntax allows to specify the label that channels from datacard.txt will have in the comparison. Example: ./compareCards.py Bkg=susy_cards_1l_4fb_BKGEstImpr_NoAddMET_DiLepFlag/T1tttt_HL_1500_100/CnC2015X_ForYieldComparisons_DPhi00.card.txt Sig=susy_cards_1l_4fb_1lepImpr_DiLepFlag/T1tttt_HL_1500_100/CnC2015X_ForYieldComparisons_DPhi05.card.txt"
+    epilog="The label=datacard.txt syntax allows to specify the label that channels from datacard.txt will have in the comparison. Example: ./compareCards.py Bkg=susy_cards_1l_4fb_BKGEstImpr_NoAddMET_DiLepFlag/T1tttt_HL_1500_100/CnC2015X_ForYieldComparisons_DPhi00.card.txt Sig=susy_cards_1l_4fb_1lepImpr_DiLepFlag/T1tttt_HL_1500_100/CnC2015X_ForYieldComparisons_DPhi05.card.txt. Needs sorced HiggsAnalysis environment (because of DatacardParser)"
     )
 parser.add_option("-s", "--stat",   dest="stat",          default=False, action="store_true", help="Drop all systematics")
 parser.add_option("-S", "--force-shape", dest="shape",    default=False, action="store_true", help="Treat all channels as shape analysis. Useful for mixed combinations") 
