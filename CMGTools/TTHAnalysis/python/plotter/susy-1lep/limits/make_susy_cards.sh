@@ -72,8 +72,15 @@ function makeCard_1l {
         ST0)  GO="${GO} -R st200 st200250 ST>200&&ST<250 "; EXTRALABEL="${EXTRALABEL} 200<ST<250 GeV\n" ;;
         ST1)  GO="${GO} -R st200 st250350 ST>250&&ST<350 "; EXTRALABEL="${EXTRALABEL} 250<ST<350 GeV\n" ;;
         ST2)  GO="${GO} -R st200 st350450 ST>350&&ST<450 "; EXTRALABEL="${EXTRALABEL} 350<ST<450 GeV\n" ;;
-        ST3)  GO="${GO} -R st200 st450600 ST>450&&ST<600 "; EXTRALABEL="${EXTRALABEL} 450<ST<600 GeV\n" ;;
-        ST4)  GO="${GO} -R st200 st600Inf ST>600 "; EXTRALABEL="${EXTRALABEL} ST>600 GeV\n" ;;
+        ST3)  GO="${GO} -R st200 st450550 ST>450&&ST<550 "; EXTRALABEL="${EXTRALABEL} 450<ST<550 GeV\n" ;;
+        ST4)  GO="${GO} -R st200 st550700 ST>550&&ST<700 "; EXTRALABEL="${EXTRALABEL} 550<ST<700 GeV\n" ;;
+        ST5)  GO="${GO} -R st200 st700Inf ST>700 "; EXTRALABEL="${EXTRALABEL} ST>700 GeV\n" ;;
+        STDynDP0)  GO="${GO} -R st200 st200250 ST>200&&ST<250 -R dp1 dp10 fabs(DeltaPhiLepW)>1.0 "; EXTRALABEL="${EXTRALABEL} 200<ST<250 GeV\n #Delta#phi>1.0\n" ;;
+        STDynDP1)  GO="${GO} -R st200 st250350 ST>250&&ST<350 -R dp1 dp10 fabs(DeltaPhiLepW)>1.0 "; EXTRALABEL="${EXTRALABEL} 250<ST<350 GeV\n #Delta#phi>1.0\n" ;;
+        STDynDP2)  GO="${GO} -R st200 st350450 ST>350&&ST<450 -R dp1 dp075 fabs(DeltaPhiLepW)>0.75 "; EXTRALABEL="${EXTRALABEL} 350<ST<450 GeV\n #Delta#phi>0.75\n" ;;
+        STDynDP3)  GO="${GO} -R st200 st450550 ST>450&&ST<550 -R dp1 dp075 fabs(DeltaPhiLepW)>0.75 "; EXTRALABEL="${EXTRALABEL} 450<ST<550 GeV\n #Delta#phi>0.75\n" ;;
+        STDynDP4)  GO="${GO} -R st200 st550700 ST>550&&ST<700 -R dp1 dp05 fabs(DeltaPhiLepW)>0.5 "; EXTRALABEL="${EXTRALABEL} 550<ST<700 GeV\n #Delta#phi>0.5\n" ;;
+        STDynDP5)  GO="${GO} -R st200 st700Inf ST>700 -R dp1 dp05 fabs(DeltaPhiLepW)>0.5 "; EXTRALABEL="${EXTRALABEL} ST>700 GeV\n #Delta#phi>0.5\n" ;;
     esac;
 
 
@@ -103,12 +110,14 @@ function makeCard_1l {
     # HT and "R&D" categories
     case $HT in
         HTInc) GO="${GO} -R ht500 ht500Inf HT>500"; EXTRALABEL="${EXTRALABEL} HT>500 GeV\n"  ;;
-        HT0) GO="${GO} -R ht500 ht5001000 HT>500&&HT<1000"; EXTRALABEL="${EXTRALABEL} 500<HT<1000 GeV\n"  ;;
-        HT1) GO="${GO} -R ht500 ht1000Inf HT>=1000"; EXTRALABEL="${EXTRALABEL} HT>1000 GeV\n"  ;;
+        HT0) GO="${GO} -R ht500 ht500750 HT>500&&HT<=750"; EXTRALABEL="${EXTRALABEL} 500<HT<750 GeV\n"  ;;
+        HT1) GO="${GO} -R ht500 ht7501250 HT>750&&HT<=1250"; EXTRALABEL="${EXTRALABEL} 750<HT<1250 GeV\n"  ;;
+        HT2) GO="${GO} -R ht500 ht1250Inf HT>1250"; EXTRALABEL="${EXTRALABEL} HT>1250 GeV\n"  ;;
     esac;
 
     # "R&D" categories
     case $RD in
+        Def) GO="${GO} "; EXTRALABEL="${EXTRALABEL} baseline\n"  ;;
         DPhi10) GO="${GO} "; EXTRALABEL="${EXTRALABEL} #Delta#phi>1.0\n"  ;;
         DPhi075) GO="${GO} -R dp1 dp075 fabs(DeltaPhiLepW)>0.75 "; EXTRALABEL="${EXTRALABEL} #Delta#phi>0.75\n"  ;;
         DPhi05) GO="${GO} -R dp1 dp05 fabs(DeltaPhiLepW)>0.5 "; EXTRALABEL="${EXTRALABEL} #Delta#phi>0.5\n"  ;;
@@ -182,8 +191,17 @@ if [[ "$1" == "1l-makeCards" ]]; then
     echo "$STValue"
     
     echo "Making individual datacards"
-    for ST in "$STValue"; do for nJ in 45j 68j 6Infj 9Infj; do for nB in 1p 1B 2B 3p; do for HT in HT0 HT1; do for RD in DPhi00 DPhi05 DPhi075 DPhi10; do
+#old approach
+#    for ST in "$STValue"; do for nJ in 45j 68j 6Infj 9Infj; do for nB in 1p 1B 2B 3p; do for HT in HT0 HT1; do for RD in DPhi00 DPhi05 DPhi075 DPhi10; do
 #    for ST in ST0 ST1 ST2 ST3 ST4 STInc; do for nJ in 45j 68j 6Infj 9Infj; do for nB in 1p 1B 2B 3p; do for HT in HT0 HT1; do for RD in DPhi00 DPhi05 DPhi075 DPhi10; do
+
+#for baseline analysis:
+#    for ST in "$STValue"; do for nJ in 45j 68j 6Infj 9Infj; do for nB in 1p 1B 2B 3p; do for HT in HT0 HT1 HT2; do for RD in Def; do
+    for ST in STDynDP0 STDynDP1 STDynDP2 STDynDP3 STDynDP4 STDynDP5; do for nJ in 45j 68j 6Infj 9Infj; do for nB in 1p 1B 2B 3p; do for HT in HT0 HT1 HT2; do for RD in Def; do
+
+#for dphi>0.5, single topness, topness, and soft lepton analysis:
+#    for ST in "$STValue"; do for nJ in 45j 68j 6Infj 9Infj; do for nB in 1p 1B 2B 3p; do for HT in HT0 HT1 HT2; do for RD in Def; do
+#    for ST in ST0 ST1 ST2 ST3 ST4 ST5; do for nJ in 45j 68j 6Infj 9Infj; do for nB in 1p 1B 2B 2Btop 3p; do for HT in HT0 HT1 HT2; do for RD in DPhi05 Stop LowLepPtStop; do
         echo " --- CnC2015X_${nB}_${ST}_${nJ}_${HT}_${RD} ---"
         makeCard_1l $CnC_expr $CnC_bins $SYSTS CnC2015X_${nB}_${ST}_${nJ}_${HT}_${RD} "$OPTIONS";
                 done; done; done; done; done;
@@ -212,22 +230,30 @@ if [[ "$1" == "1l-combine" ]]; then
         test -f $D/CnC2015X_2B_ST1_68j_HT1_DPhi05.card.txt || continue
 	echo "Making combined datacards3"
         (cd $D && echo "    $D";
-            for nB in 2B 3B; do
-                combineCardsSmart CnC2015X_${nB}_{ST0,ST1,ST2,ST3,ST4}_6Infj_{HT0,HT1}.card.txt >  CnC2015X_${nB}_standardnJ.card.txt
-                combineCardsSmart CnC2015X_${nB}_{ST0,ST1,ST2,ST3,ST4}_{68j,9Infj}_{HT0,HT1}.card.txt >  CnC2015X_${nB}_finenJ.card.txt
+            for nB in 1B 2B 3p; do
+                combineCardsSmart CnC2015X_${nB}_{STDynDP0,STDynDP1,STDynDP2,STDynDP3,STDynDP4,STDynDP5}_6Infj_{HT0,HT1,HT2}_Def.card.txt >  CnC2015X_${nB}_standardnJ.card.txt
+                combineCardsSmart CnC2015X_${nB}_{STDynDP0,STDynDP1,STDynDP2,STDynDP3,STDynDP4,STDynDP5}_{68j,9Infj}_{HT0,HT1,HT2}_Def.card.txt >  CnC2015X_${nB}_finenJ.card.txt
 
             done
-            combineCardsSmart CnC2015X_{2B,3B}_standardnJ.card.txt >  CnC2015X_standardnJ.card.txt # standard nJet-binning; HT-binning
-            combineCardsSmart CnC2015X_{2B,3B}_finenJ.card.txt >  CnC2015X_finenJ.card.txt #fine nJet-binning; HT-binning
+            combineCardsSmart CnC2015X_{1B,2B,3p}_standardnJ.card.txt >  CnC2015X_standardnJ.card.txt # standard nJet-binning; HT-binning
+            combineCardsSmart CnC2015X_{1B,2B,3p}_finenJ.card.txt >  CnC2015X_finenJ.card.txt #fine nJet-binning; HT-binning
+
+            combineCardsSmart CnC2015X_{1B,2B,3p}_{ST0,ST1,ST2,ST3,ST4,ST5}_{68j,9Infj}_{HT0,HT1,HT2}_DPhi05.card.txt >  CnC2015X_Dphi05.card.txt #fine nJet-binning; HT-binning; DPhi>0.5
+            combineCardsSmart CnC2015X_{1B,2B,3p}_{ST0,ST1,ST2,ST3,ST4,ST5}_{68j,9Infj}_{HT0,HT1,HT2}_Stop.card.txt >  CnC2015X_STop.card.txt #fine nJet-binning; HT-binning; single topness only
+            combineCardsSmart CnC2015X_{1B,2Btop,3p}_{ST0,ST1,ST2,ST3,ST4,ST5}_{68j,9Infj}_{HT0,HT1,HT2}_Stop.card.txt >  CnC2015X_STop_Top2B.card.txt #fine nJet-binning; HT-binning; use topness for 2B
+            combineCardsSmart CnC2015X_{1B,2Btop,3p}_{ST0,ST1,ST2,ST3,ST4,ST5}_{68j,9Infj}_{HT0,HT1,HT2}_LowLepPtStop.card.txt >  CnC2015X_LowLepPtStop.card.txt #fine nJet-binning; HT-binning; use topness for 2B
+
+
 
 	    #merge everything to be able to parse easily the datacards
-	    combineCardsSmart CnC2015X_{1p,1B,2B,3p}_{ST0,ST1,ST2,ST3,ST4}_{68j,6Infj,9Infj}_{HT0,HT1}_DPhi00.card.txt > CnC2015X_ForYieldComparisons_DPhi00.card.txt
-	    combineCardsSmart CnC2015X_{1p,1B,2B,3p}_{ST0,ST1,ST2,ST3,ST4}_{68j,6Infj,9Infj}_{HT0,HT1}_DPhi05.card.txt > CnC2015X_ForYieldComparisons_DPhi05.card.txt
-	    combineCardsSmart CnC2015X_{1p,1B,2B,3p}_{ST0,ST1,ST2,ST3,ST4}_{68j,6Infj,9Infj}_{HT0,HT1}_DPhi075.card.txt > CnC2015X_ForYieldComparisons_DPhi075.card.txt
-	    combineCardsSmart CnC2015X_{1p,1B,2B,3p}_{ST0,ST1,ST2,ST3,ST4}_{68j,6Infj,9Infj}_{HT0,HT1}_DPhi10.card.txt > CnC2015X_ForYieldComparisons_DPhi10.card.txt
+	    combineCardsSmart CnC2015X_{1p,1B,2B,3p}_{ST0,ST1,ST2,ST3,ST4,ST5}_{68j,6Infj,9Infj}_{HT0,HT1,HT2}_DPhi00.card.txt > CnC2015X_ForYieldComparisons_DPhi00.card.txt
+	    combineCardsSmart CnC2015X_{1p,1B,2B,3p}_{ST0,ST1,ST2,ST3,ST4,ST5}_{68j,6Infj,9Infj}_{HT0,HT1,HT2}_DPhi05.card.txt > CnC2015X_ForYieldComparisons_DPhi05.card.txt
+	    combineCardsSmart CnC2015X_{1p,1B,2B,3p}_{ST0,ST1,ST2,ST3,ST4,ST5}_{68j,6Infj,9Infj}_{HT0,HT1,HT2}_DPhi075.card.txt > CnC2015X_ForYieldComparisons_DPhi075.card.txt
+	    combineCardsSmart CnC2015X_{1p,1B,2B,3p}_{ST0,ST1,ST2,ST3,ST4,ST5}_{68j,6Infj,9Infj}_{HT0,HT1,HT2}_DPhi10.card.txt > CnC2015X_ForYieldComparisons_DPhi10.card.txt
+	    combineCardsSmart CnC2015X_{1p,1B,2B,3p}_{STDynDP0,STDynDP1,STDynDP2,STDynDP3,STDynDP4,STDynDP5}_{68j,6Infj,9Infj}_{HT0,HT1,HT2}_Def.card.txt > CnC2015X_ForYieldComparisons_DynamicDPhi.card.txt
 
-	    combineCardsSmart CnC2015X_{1p,1B,2B,3p}_{ST0,ST1,ST2,ST3,ST4}_{68j,6Infj,9Infj}_{HT0,HT1}_Stop.card.txt > CnC2015X_ForYieldComparisons_Stop.card.txt
-	    combineCardsSmart CnC2015X_{1p,1B,2B,3p}_{ST0,ST1,ST2,ST3,ST4}_{68j,6Infj,9Infj}_{HT0,HT1}_Top.card.txt > CnC2015X_ForYieldComparisons_Top.card.txt
+	    combineCardsSmart CnC2015X_{1p,1B,2B,3p}_{ST0,ST1,ST2,ST3,ST4,ST5}_{68j,6Infj,9Infj}_{HT0,HT1,HT2}_Stop.card.txt > CnC2015X_ForYieldComparisons_Stop.card.txt
+	    combineCardsSmart CnC2015X_{1p,1B,2B,3p}_{ST0,ST1,ST2,ST3,ST4,ST5}_{68j,6Infj,9Infj}_{HT0,HT1,HT2}_Top.card.txt > CnC2015X_ForYieldComparisons_Top.card.txt
 
         )
     done
