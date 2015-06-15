@@ -196,11 +196,11 @@ if [[ "$1" == "1l-makeCards" ]]; then
 #    for ST in ST0 ST1 ST2 ST3 ST4 STInc; do for nJ in 45j 68j 6Infj 9Infj; do for nB in 1p 1B 2B 3p; do for HT in HT0 HT1; do for RD in DPhi00 DPhi05 DPhi075 DPhi10; do
 
 #for baseline analysis:
-#    for ST in "$STValue"; do for nJ in 45j 68j 6Infj 9Infj; do for nB in 1p 1B 2B 3p; do for HT in HT0 HT1 HT2; do for RD in Def; do
-    for ST in STDynDP0 STDynDP1 STDynDP2 STDynDP3 STDynDP4 STDynDP5; do for nJ in 45j 68j 6Infj 9Infj; do for nB in 1p 1B 2B 3p; do for HT in HT0 HT1 HT2; do for RD in Def; do
+    for ST in "$STValue"; do for nJ in 45j 68j 6Infj 9Infj; do for nB in 1p 1B 2B 3p; do for HT in HT0 HT1 HT2; do for RD in Def; do
+#    for ST in STDynDP0 STDynDP1 STDynDP2 STDynDP3 STDynDP4 STDynDP5; do for nJ in 45j 68j 6Infj 9Infj; do for nB in 1p 1B 2B 3p; do for HT in HT0 HT1 HT2; do for RD in Def; do
 
 #for dphi>0.5, single topness, topness, and soft lepton analysis:
-#    for ST in "$STValue"; do for nJ in 45j 68j 6Infj 9Infj; do for nB in 1p 1B 2B 3p; do for HT in HT0 HT1 HT2; do for RD in Def; do
+#    for ST in "$STValue"; do for nJ in 45j 68j 6Infj 9Infj; do for nB in 1p 1B 2B 2Btop 3p; do for HT in HT0 HT1 HT2; do for RD in DPhi05 Stop LowLepPtStop; do
 #    for ST in ST0 ST1 ST2 ST3 ST4 ST5; do for nJ in 45j 68j 6Infj 9Infj; do for nB in 1p 1B 2B 2Btop 3p; do for HT in HT0 HT1 HT2; do for RD in DPhi05 Stop LowLepPtStop; do
         echo " --- CnC2015X_${nB}_${ST}_${nJ}_${HT}_${RD} ---"
         makeCard_1l $CnC_expr $CnC_bins $SYSTS CnC2015X_${nB}_${ST}_${nJ}_${HT}_${RD} "$OPTIONS";
