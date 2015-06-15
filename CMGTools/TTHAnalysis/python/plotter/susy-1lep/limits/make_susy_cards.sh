@@ -212,13 +212,13 @@ if [[ "$1" == "1l-combine" ]]; then
         test -f $D/CnC2015X_2B_ST1_68j_HT1_DPhi05.card.txt || continue
 	echo "Making combined datacards3"
         (cd $D && echo "    $D";
-            for nB in 2B 3p; do
+            for nB in 2B 3B; do
                 combineCardsSmart CnC2015X_${nB}_{ST0,ST1,ST2,ST3,ST4}_6Infj_{HT0,HT1}.card.txt >  CnC2015X_${nB}_standardnJ.card.txt
                 combineCardsSmart CnC2015X_${nB}_{ST0,ST1,ST2,ST3,ST4}_{68j,9Infj}_{HT0,HT1}.card.txt >  CnC2015X_${nB}_finenJ.card.txt
 
             done
-            combineCardsSmart CnC2015X_{2B,3p}_standardnJ.card.txt >  CnC2015X_standardnJ.card.txt # standard nJet-binning; HT-binning
-            combineCardsSmart CnC2015X_{2B,3p}_finenJ.card.txt >  CnC2015X_finenJ.card.txt #fine nJet-binning; HT-binning
+            combineCardsSmart CnC2015X_{2B,3B}_standardnJ.card.txt >  CnC2015X_standardnJ.card.txt # standard nJet-binning; HT-binning
+            combineCardsSmart CnC2015X_{2B,3B}_finenJ.card.txt >  CnC2015X_finenJ.card.txt #fine nJet-binning; HT-binning
 
 	    #merge everything to be able to parse easily the datacards
 	    combineCardsSmart CnC2015X_{1p,1B,2B,3p}_{ST0,ST1,ST2,ST3,ST4}_{68j,6Infj,9Infj}_{HT0,HT1}_DPhi00.card.txt > CnC2015X_ForYieldComparisons_DPhi00.card.txt
