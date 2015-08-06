@@ -1,6 +1,8 @@
 #include <cmath>
 #include "Math/GenVector/LorentzVector.h"
-
+#include <TMath.h>
+#include <iostream>
+#include <TLorentzVector.h>
 //// UTILITY FUNCTIONS NOT IN TFORMULA ALREADY
 
 float deltaPhi(float phi1, float phi2) {
@@ -31,6 +33,20 @@ float pt_2(float pt1, float phi1, float pt2, float phi2) {
 float mt_2(float pt1, float phi1, float pt2, float phi2) {
     return std::sqrt(2*pt1*pt2*(1-std::cos(phi1-phi2)));
 }
+
+float P(float pt1, float eta1, float phi1, float m1)
+{
+ TLorentzVector p41;
+  p41.SetPtEtaPhiM(pt1,eta1,phi1,m1);
+  return p41.P();
+}
+float Theta(float pt1, float eta1, float phi1, float m1)
+{
+ TLorentzVector p41;
+  p41.SetPtEtaPhiM(pt1,eta1,phi1,m1);
+  return p41.Theta();
+}
+
 
 float mass_2(float pt1, float eta1, float phi1, float m1, float pt2, float eta2, float phi2, float m2) {
     typedef ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> > PtEtaPhiMVector;
@@ -91,4 +107,62 @@ float mtw_wz3l(float pt1, float eta1, float phi1, float m1, float pt2, float eta
     if (abs(mZ1 - mass_2(pt2,eta2,phi2,m2,pt3,eta3,phi3,m3)) < 0.01) return mt_2(pt1,phi1,met,metphi);
     return 0;
 }
+
+// Dphi functuions
+
+double myFuncThetaOfP(double *x, double *par) {// syntax to build a TF1
+  float PW = par[0]; 
+  float MW = par[1]; 
+  float gamma =  sqrt(1+PW/MW*PW/MW);
+  float beta =  sqrt(1-1/(gamma*gamma));
+  float xx = x[0];
+  float cos = (-2*gamma*gamma*beta + sqrt ( 4*gamma*gamma*gamma*gamma*beta*beta - 4 * (-4*xx*xx/(80*80) + gamma*gamma*beta*beta+1) * (gamma*gamma-1) ) ) /(2*(gamma*gamma-1));
+  float cosM = (-2*gamma*gamma*beta - sqrt ( 4*gamma*gamma*gamma*gamma*beta*beta - 4 * (-4*xx*xx/(80*80) + gamma*gamma*beta*beta+1) * (gamma*gamma-1) ) ) /(2*(gamma*gamma-1));
+  // their are region where the lepton cannot reach certain pt for given WPt, i.e. unphysical regions that lead to cos > 1
+  
+  if (fabs(cos) < 1) return acos(cos); // typically the right one
+  if (fabs(cosM) < 1) return acos(cosM);
+  cout << "strange"<<endl;
+  return -999;
+   }
+
+
+double myFuncDROfPandPT(double *x, double *par) { // syntax to build a TF1
+
+  float PW = x[0];
+  float PT = x[1];
+  float MW = par[0]; 
+  float gamma =  sqrt(1+PW/MW*PW/MW);
+
+  double ParNew[2] = {PW,MW};
+  double xNew[1] =  {PT};
+  float beta =  sqrt(1-1/(gamma*gamma));
+  float theta = myFuncThetaOfP(xNew,ParNew);
+  if (theta==-999) return 0;
+  float DR = 0;
+
+  // atan does not make sense denaminator is < 0, i.e. the angle > pi/2 
+  if(gamma*(cos(theta)+beta)>0)
+    {
+      DR =  atan( sin(theta)/ (gamma*(cos(theta)+beta)  ) );
+    }
+  else  { // fix the above mentioned case
+      DR =  atan( sin(theta)/ fabs(gamma*(cos(theta)+beta)) );
+      DR = TMath::Pi()-DR;
+
+    }
+  return fabs(DR);
+   }
+
+float DR_for_ST_PT(float ST, float PT)
+{
+  double x[2] = {ST,PT};
+  double par[2] = {81.0};
+  float DR = myFuncDROfPandPT(x,par);
+  cout << "DR calc: "<<DR <<endl;
+  return DR;
+}
+
+
+
 void functions() {}
